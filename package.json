@@ -1,0 +1,41 @@
+{
+	"name": "@hipsjs/flowy-vue",
+	"version": "1.0.13",
+	"description": "Shopify draggable for Vue",
+	"main": "./dist/lib/flowy-vue.common.js",
+	"private": false,
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview --port 4173"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/remcoplasmeyer/flowy-vue.git"
+	},
+	"files": [
+		"dist/lib"
+	],
+	"author": "Remco Plasmeijer <remco.plasmeijer@gmail.com>",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/remcoplasmeyer/flowy-vue/issues"
+	},
+	"dependencies": {
+		"@hipsjs/shopify-draggable-vue": "^1.0.7",
+		"lodash": "^4.17.15",
+		"sass": "^1.58.3"
+	},
+	"devDependencies": {
+		"@rushstack/eslint-patch": "^1.1.0",
+		"@vitejs/plugin-legacy": "^2.0.0",
+		"@vitejs/plugin-vue2": "^1.1.2",
+		"@vue/eslint-config-prettier": "^7.0.0",
+		"eslint": "^8.5.0",
+		"eslint-plugin-vue": "^9.0.0",
+		"prettier": "^2.5.1",
+		"terser": "^5.14.2",
+		"vite": "^3.0.2",
+		"vue": "^2.5.16"
+	}
+}
