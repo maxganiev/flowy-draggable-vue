@@ -1,43 +1,78 @@
 <template>
   <div class="h-screen w-screen bg-gray-200 flex flex-col flex-no-wrap overflow-none">
-    <div class="flex-grow overflow-hidden flex flex-row flex-no-wrap">
+    <div class="flex-grow flex flex-row flex-no-wrap overflow-hidden">
       <div
-        class="z-40 flex-shrink pl-6 pt-6 bg-white border-r border-grey-400"
-        style="display: none"
+        v-if="renderUsersTab"
+        class="z-40 pl-6 pt-6 bg-white border-r border-grey-400 users-tab-wrapper"
+        :style="{ transform: usersTabCollapsed ? 'translateX(-100%)' : 'translateX(0%)' }"
+        ref="usersTab"
       >
-        <div class="side z-50">
-          <div class="text-lg font-bold mb-4">Blocks</div>
+        <div class="addtypes-radio-wrapper">
+          <span> Добавить: </span>
+          <br />
+          <input type="radio" id="radio-add-user" value="user" v-model="addType" />
+          <label for="radio-add-user"> пользователя </label>
+          <br />
+          <input type="radio" id="radio-add-block" value="block" v-model="addType" />
+          <label for="radio-add-user"> подгруппу (блок) </label>
+        </div>
+        <div class="side z-50" v-if="addType === 'user'">
+          <SearchUsers />
 
-          <div>
+          <div v-if="store.users.length > 0">
             <flowy-new-block
-              v-for="(block, index) in blocks"
+              v-for="(item, index) in store.users"
               :key="index"
               @drag-start="onDragStartNewBlock"
               @drag-stop="onDragStopNewBlock"
             >
               <template v-slot:preview="{}">
-                <demo-block
-                  :title="block.preview.title"
-                  :description="block.preview.description"
-                  :icon="block.preview.icon"
+                <flow-users-tab
+                  :id="item.id"
+                  :dep_id="item.dep_id"
+                  :full_name_short="item.data.full_name_short"
+                  :avatar_thumb="item.data.avatar_thumb"
+                  :position_name="item.data.position_name"
+                  :profileUrl="item.data.profileUrl"
+                  :descr="item.data.descr"
                 />
               </template>
 
               <template v-slot:node="{}">
                 <flow-node
-                  :title="block.node.title"
-                  :description="block.node.description"
-                  :icon="block.node.icon"
-                  :custom-prop="block.node.canBeDragged"
+                  :id="item.id"
+                  :dep_id="item.dep_id"
+                  :full_name_short="item.data.full_name_short"
+                  :avatar_thumb="item.data.avatar_thumb"
+                  :position_name="item.data.position_name"
+                  :profileUrl="item.data.profileUrl"
+                  :descr="item.data.descr"
                 />
               </template>
             </flowy-new-block>
           </div>
         </div>
+        <div class="side z-50" v-else>
+          <p>123</p>
+        </div>
       </div>
 
-      <div v-if="nodes.length > 0" class="flex-grow overflow-auto">
+      <button
+        v-if="renderUsersTab"
+        class="btn-swipe-collapse"
+        :style="{
+          transform: usersTabCollapsed
+            ? `translateX(-${this.$refs.usersTab.getBoundingClientRect().width}px)`
+            : 'translateX(0)',
+        }"
+        v-on:click="swipeUsersTabCollapse"
+      >
+        {{ !usersTabCollapsed ? "-" : "+" }}
+      </button>
+
+      <div class="flex-grow overflow-auto scheme-wrapper" ref="schemeWrapper">
         <flowy
+          v-if="nodes.length > 0"
           class="h-full w-full p-6"
           :nodes="nodes"
           @drag-start="onDragStart"
@@ -60,30 +95,52 @@ import { blocks } from "./demo_data/sampleBlocks";
 import { getUsersScheme } from "./demo_data/getUsersScheme";
 import { getCurrentUser } from "./demo_data/getCurrentUser";
 import { store } from "./store";
+import SearchUsers from "./components/SearchUsers.vue";
+import { User } from "./lib/constructors/User";
 
 export default {
   name: "app",
 
   data: () => ({
+    store,
     users: [],
     holder: [],
     dragging: false,
     blocks,
     nodes: [],
     newDraggingBlock: null,
+    usersTabCollapsed: false,
+    addType: "user",
+    renderUsersTab: false,
+    usersTab: null,
+    schemeWrapper: null,
   }),
+
+  components: { SearchUsers },
+
   methods: {
+    swipeUsersTabCollapse() {
+      this.usersTabCollapsed = !this.usersTabCollapsed;
+
+      setTimeout(() => {
+        this.$refs.usersTab.style.display = this.usersTabCollapsed ? "none" : "block";
+        //this.$refs.schemeWrapper.style.transform = "translateX(0)";
+      }, 200);
+    },
     onDragStartNewBlock(event) {
       console.log("onDragStartNewBlock", event);
       this.newDraggingBlock = event;
+      this.$refs.usersTab.style.transform = "unset";
     },
     onDragStopNewBlock(event) {
       console.log("onDragStopNewBlock", event);
       this.newDraggingBlock = null;
+      this.$refs.usersTab.style.transform = "translateX(0%)";
     },
     onDropBlock(_event) {},
-    beforeAdd() {
-      console.log("before add");
+    beforeAdd(event) {
+      console.log("before add", event);
+      //store.removeAddedUser(event.to.data.id);
       return true;
     },
     afterAdd() {},
@@ -116,8 +173,18 @@ export default {
       console.log(this.nodes);
     },
     add(event) {
-      //const id = generateId();
-      this.nodes.push(event.node);
+      const id = event.node.data.id;
+      const dep_id = event.node.data.dep_id;
+
+      //swipe old values by keys:
+      const newNode = new User();
+      Object.keys(newNode).forEach((key) => (newNode[key] = event.node[key]));
+      newNode.id = id;
+      newNode.dep_id = dep_id;
+
+      // console.log(newNode);
+
+      this.nodes.push(newNode);
     },
     onDragStart(event) {
       console.log("onDragStart", event);
@@ -127,6 +194,8 @@ export default {
   async created() {
     await getCurrentUser().then(async (res) => {
       store.getUser(res);
+      //here we check if current user is allowed to update scheme
+      this.renderUsersTab = store.adminsIds.includes(store.user.id);
       this.nodes = await getUsersScheme();
       console.log(this.nodes);
     });
@@ -207,7 +276,33 @@ a {
   min-height: 700px;
 }
 
+.scheme-wrapper,
+.users-tab-wrapper,
+.btn-swipe-collapse {
+  transition: all 0.3s ease-in-out 0s;
+}
+
+.users-tab-wrapper {
+  width: 60%;
+  overflow: auto;
+}
+
+.btn-swipe-collapse {
+  position: absolute;
+  top: 5px;
+  z-index: 2000;
+  left: 366.3px;
+  background: #061f8f;
+  color: #fff;
+  font-weight: 700;
+  width: 30px;
+  height: 30px;
+  border-radius: 30px;
+  font-size: 1rem;
+}
+
 .side {
+  margin-top: 30px;
   width: 340px;
   height: 100%;
 }
@@ -228,6 +323,6 @@ a {
 }
 
 .flowy-block.draggable-mirror {
-  opacity: 0.6;
+  opacity: 1;
 }
 </style>

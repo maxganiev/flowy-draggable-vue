@@ -6,7 +6,7 @@
     <div class="flex flex-row flex-no-wrap justify-between items-center p-4 upper-block">
       <div class="flex flex-row flex-no-wrap justify-start items-center main-info-wrapper">
         <div class="thumb-wrapper">
-          <img :src="avatar_thumb" />
+          <img :src="'https://portal.elcomspb.ru/' + avatar_thumb" />
         </div>
 
         <div class="text-wrapper">

@@ -1,7 +1,7 @@
 <template>
   <div class="flowy-block mr-24px relative">
     <slot></slot>
-    <component :is="component" v-bind="{ ...$props, ...$attrs, ...passedProps }" ref="block" />
+    <component :is="component" v-bind="{ ...$props, ...$attrs, ...passedProps }" />
   </div>
 </template>
 
@@ -14,6 +14,7 @@ export default {
       type: Object,
       required: true,
     },
+
     remove: {
       type: Function,
       required: true,
@@ -27,7 +28,6 @@ export default {
   computed: {
     component() {
       return this.node.nodeComponent;
-      // return find(this.blocks, { name: this.node.block }).name;
     },
     passedProps() {
       return this.node.data;

@@ -13,7 +13,7 @@
 <script>
 export default {
   data: () => ({
-    zoom: 0.7,
+    zoom: 0.85,
   }),
 };
 </script>
