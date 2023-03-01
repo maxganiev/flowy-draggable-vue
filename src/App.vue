@@ -14,15 +14,16 @@
           <label for="radio-add-user"> пользователя </label>
           <br />
           <input type="radio" id="radio-add-block" value="block" v-model="addType" />
-          <label for="radio-add-user"> подгруппу (блок) </label>
+          <label for="radio-add-block"> подгруппу (блок) </label>
         </div>
+
         <div class="side z-50" v-if="addType === 'user'">
           <SearchUsers />
 
-          <div v-if="store.users.length > 0">
+          <div class="div-user-items" v-if="store.users.length > 0">
             <flowy-new-block
-              v-for="(item, index) in store.users"
-              :key="index"
+              v-for="item in store.users"
+              :key="item.id"
               @drag-start="onDragStartNewBlock"
               @drag-stop="onDragStopNewBlock"
             >
@@ -30,6 +31,7 @@
                 <flow-users-tab
                   :id="item.id"
                   :dep_id="item.dep_id"
+                  type="user"
                   :full_name_short="item.data.full_name_short"
                   :avatar_thumb="item.data.avatar_thumb"
                   :position_name="item.data.position_name"
@@ -42,6 +44,7 @@
                 <flow-node
                   :id="item.id"
                   :dep_id="item.dep_id"
+                  type="user"
                   :full_name_short="item.data.full_name_short"
                   :avatar_thumb="item.data.avatar_thumb"
                   :position_name="item.data.position_name"
@@ -51,30 +54,22 @@
               </template>
             </flowy-new-block>
           </div>
+          <p style="margin: 20px" v-else>Пользователи не найдены.</p>
         </div>
         <div class="side z-50" v-else>
-          <p>123</p>
+          <BlockAdder :on-drag-stop="onDragStopNewBlock" />
         </div>
       </div>
 
-      <button
-        v-if="renderUsersTab"
-        class="btn-swipe-collapse"
-        :style="{
-          transform: usersTabCollapsed
-            ? `translateX(-${this.$refs.usersTab.getBoundingClientRect().width}px)`
-            : 'translateX(0)',
-        }"
-        v-on:click="swipeUsersTabCollapse"
-      >
+      <button v-if="renderUsersTab" class="btn-swipe-collapse" v-on:click="swipeUsersTabCollapse">
         {{ !usersTabCollapsed ? "-" : "+" }}
       </button>
 
       <div class="flex-grow overflow-auto scheme-wrapper" ref="schemeWrapper">
         <flowy
-          v-if="nodes.length > 0"
+          v-if="store.nodes.length > 0"
           class="h-full w-full p-6"
-          :nodes="nodes"
+          :nodes="store.nodes"
           @drag-start="onDragStart"
           @add="add"
           @move="move"
@@ -91,12 +86,13 @@
 <script>
 /* eslint-disable vue/no-unused-components */
 /* eslint-disable no-unused-vars */
-import { blocks } from "./demo_data/sampleBlocks";
 import { getUsersScheme } from "./demo_data/getUsersScheme";
 import { getCurrentUser } from "./demo_data/getCurrentUser";
 import { store } from "./store";
 import SearchUsers from "./components/SearchUsers.vue";
 import { User } from "./lib/constructors/User";
+import BlockAdder from "./components/BlockAdder.vue";
+import { Block } from "./lib/constructors/Block";
 
 export default {
   name: "app",
@@ -106,8 +102,6 @@ export default {
     users: [],
     holder: [],
     dragging: false,
-    blocks,
-    nodes: [],
     newDraggingBlock: null,
     usersTabCollapsed: false,
     addType: "user",
@@ -116,7 +110,7 @@ export default {
     schemeWrapper: null,
   }),
 
-  components: { SearchUsers },
+  components: { SearchUsers, BlockAdder },
 
   methods: {
     swipeUsersTabCollapse() {
@@ -127,6 +121,7 @@ export default {
         //this.$refs.schemeWrapper.style.transform = "translateX(0)";
       }, 200);
     },
+
     onDragStartNewBlock(event) {
       console.log("onDragStartNewBlock", event);
       this.newDraggingBlock = event;
@@ -135,12 +130,11 @@ export default {
     onDragStopNewBlock(event) {
       console.log("onDragStopNewBlock", event);
       this.newDraggingBlock = null;
-      this.$refs.usersTab.style.transform = "translateX(0%)";
     },
     onDropBlock(_event) {},
     beforeAdd(event) {
       console.log("before add", event);
-      //store.removeAddedUser(event.to.data.id);
+      store.removeAddedUser(event.to.data.id);
       return true;
     },
     afterAdd() {},
@@ -157,34 +151,41 @@ export default {
     },
     onEnter() {},
     addNode(_event) {
-      //const id = this.generateId();
-      this.nodes.push(_event.node);
+      //this.nodes.push(_event.node);
+      store.addNode(_event.node);
     },
     remove(event) {
-      // const nodeIndex = findIndex(this.nodes, { id: event.node.id });
-      //findIndex(this.nodes, { id: event.node.id });
-      const nodeIndex = this.nodes.findIndex((node) => node.id === event.node.id);
-      this.nodes.splice(nodeIndex, 1);
+      // const nodeIndex = this.nodes.findIndex((node) => node.id === event.node.id);
+      // this.nodes.splice(nodeIndex, 1);
+      store.removeNode(event.node.id);
     },
     move(event) {
       console.log("move", event);
       const { dragged, to } = event;
       dragged.parentId = to.id;
-      console.log(this.nodes);
+      console.log(store.nodes);
     },
     add(event) {
       const id = event.node.data.id;
-      const dep_id = event.node.data.dep_id;
+      console.log(event);
+      let newNode = {};
 
-      //swipe old values by keys:
-      const newNode = new User();
-      Object.keys(newNode).forEach((key) => (newNode[key] = event.node[key]));
+      if (event.node.data.type === "user") {
+        const dep_id = event.node.data.dep_id;
+        newNode = new User();
+        //fill values by keys:
+        Object.keys(newNode).forEach((key) => (newNode[key] = event.node[key]));
+        newNode.dep_id = dep_id;
+      } else {
+        newNode = new Block();
+        //fill values by keys:
+        Object.keys(newNode).forEach((key) => (newNode[key] = event.node[key]));
+      }
       newNode.id = id;
-      newNode.dep_id = dep_id;
 
-      // console.log(newNode);
+      //console.log(newNode);
 
-      this.nodes.push(newNode);
+      store.addNode(newNode);
     },
     onDragStart(event) {
       console.log("onDragStart", event);
@@ -196,8 +197,9 @@ export default {
       store.getUser(res);
       //here we check if current user is allowed to update scheme
       this.renderUsersTab = store.adminsIds.includes(store.user.id);
-      this.nodes = await getUsersScheme();
-      console.log(this.nodes);
+      //this.nodes = await getUsersScheme();
+      store.getNodes(await getUsersScheme());
+      console.log(store.nodes);
     });
   },
 };
@@ -225,6 +227,10 @@ body {
   background-repeat: repeat;
   background-size: 30px 30px;
   background-color: #fbfbfb;
+}
+
+.bg-gray-200 {
+  background-color: #fbfbfb !important;
 }
 
 div {
@@ -258,7 +264,10 @@ h1 {
 
 a {
   text-decoration: none;
-  color: #333;
+}
+
+img {
+  border-radius: 10px;
 }
 
 .page {
@@ -282,16 +291,58 @@ a {
   transition: all 0.3s ease-in-out 0s;
 }
 
+.scheme-wrapper {
+  flex: 1;
+}
+
 .users-tab-wrapper {
-  width: 60%;
+  flex: 0.5;
   overflow: auto;
+  background-color: #fbfbfb;
+
+  .div-user-items {
+    .flowy-block {
+      margin: 10px 0;
+
+      .user-block {
+        background-color: #0e8a96;
+        width: 80%;
+        height: auto;
+        border-radius: 20px;
+        font-size: 0.85rem;
+
+        div > .main-info-wrapper {
+          .text-wrapper {
+            margin-left: 10px;
+            p,
+            a {
+              color: #fff;
+            }
+
+            a {
+              font-weight: 700;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+button {
+  &:focus {
+    outline: none !important;
+    box-shadow: 0px 0px 0px 3px rgba(0, 144, 237, 0.4);
+  }
+
+  &:hover {
+    opacity: 0.8;
+    transition: all 0.4s ease-out;
+  }
 }
 
 .btn-swipe-collapse {
-  position: absolute;
-  top: 5px;
-  z-index: 2000;
-  left: 366.3px;
+  margin: 5px;
   background: #061f8f;
   color: #fff;
   font-weight: 700;

@@ -49,7 +49,7 @@
       </flowy-drag-handle>
     </div>
 
-    <BtnRemoveFlowyNode @remove="remove" :remove="remove" />
+    <BtnRemoveFlowyNode :remove="remove" />
   </div>
 </template>
 

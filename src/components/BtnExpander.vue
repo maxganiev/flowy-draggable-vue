@@ -1,5 +1,13 @@
 <template>
-  <button class="expander" @click="callback()">
+  <button
+    class="expander"
+    @click="
+      (e) => {
+        callback();
+        scrollDown(e);
+      }
+    "
+  >
     {{ !isClosed ? "-" : "+" }}
   </button>
 </template>
@@ -15,6 +23,16 @@ export default {
     callback: {
       type: Function,
       required: true,
+    },
+  },
+  methods: {
+    scrollDown(e) {
+      setTimeout(() => {
+        e.target.parentElement.nextElementSibling.scrollIntoView({
+          behavior: "smooth",
+          block: this.isClosed ? "end" : "start",
+        });
+      }, 60);
     },
   },
 };

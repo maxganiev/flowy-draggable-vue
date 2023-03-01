@@ -1,3 +1,0 @@
-# Quasar extension: Flowy 🚡
-
-

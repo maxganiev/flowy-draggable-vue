@@ -1,6 +1,17 @@
 import { reactive } from "vue";
 
 export const store = reactive({
+  nodes: [],
+  getNodes(/**@type {Object[]} */ nodes) {
+    this.nodes = nodes;
+  },
+  addNode(/**@type {Object} */ node) {
+    this.nodes.push(node);
+  },
+  removeNode(/**@type {Number} */ id) {
+    const nodeIndex = this.nodes.findIndex((node) => node.id === id);
+    this.nodes.splice(nodeIndex, 1);
+  },
   user: {},
   getUser(/**@type {Object} */ user) {
     this.user = user;
@@ -12,9 +23,9 @@ export const store = reactive({
   searchUsers(/**@type {Object[]} */ users) {
     this.users = users;
   },
+
   removeAddedUser(/**@type {Number} */ userId) {
     const index = this.users.findIndex((item) => item.id === userId);
     this.users.splice(index, 1);
-    console.log(this.users.map((item) => item.data.full_name_short));
   },
 });

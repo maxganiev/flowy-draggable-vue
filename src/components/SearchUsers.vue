@@ -3,15 +3,7 @@
     <label for="input-search-users"
       >Введите ФИО нужного сотрудника, которого хотите добавить в схему</label
     >
-    <input type="text" id="input-search-users" v-on:input="(e) => search(e)" />
-    <!-- <div v-if="searchStart" class="div-print-result">
-      <p v-if="result.length === 0">Ничего не найдено</p>
-      <ul v-else>
-        <li v-for="user in result">
-          {{ user.data.full_name_short }}
-        </li>
-      </ul>
-    </div> -->
+    <input type="text" id="input-search-users" @input="(e) => search(e)" />
   </div>
 </template>
 
@@ -23,9 +15,9 @@ import { store } from "../store";
 export default {
   name: "searchUsers",
   data: () => ({
-    result: [],
     searchStart: false,
   }),
+  components: { store },
   methods: {
     async search(e) {
       const query = e.target.value.toLowerCase();
@@ -61,3 +53,20 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+input[type="text"] {
+  width: 90%;
+  margin: 20px auto 0 auto;
+  border-radius: 10px;
+  height: 30px;
+  border: 0.5px #e2e8f0 solid;
+  font-size: 0.9rem;
+  padding: 1.5px 2px;
+
+  &:focus {
+    outline: none !important;
+    box-shadow: 0px 0px 0px 3px rgba(0, 144, 237, 0.4);
+  }
+}
+</style>
