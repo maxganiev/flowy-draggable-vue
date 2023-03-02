@@ -1,8 +1,6 @@
 <template>
   <div class="search-users">
-    <label for="input-search-users"
-      >Введите ФИО нужного сотрудника, которого хотите добавить в схему</label
-    >
+    <h4>Введите ФИО нужного сотрудника, которого хотите добавить в схему</h4>
     <input type="text" id="input-search-users" @input="(e) => search(e)" />
   </div>
 </template>
@@ -24,14 +22,17 @@ export default {
       this.searchStart = query.length >= 2;
 
       if (this.searchStart) {
-        const data = await getAllUsers().then((res) => res);
-        //console.log(data);
+        store.toggleLoading();
+        const users = await getAllUsers().then((res) => res);
+
         store.searchUsers(
-          data.data
+          users.data
             .filter(
               (item) =>
-                item.first_name.toLowerCase().slice(0, query.length) === query ||
-                item.last_name.toLowerCase().slice(0, query.length) === query
+                (item.first_name.toLowerCase().slice(0, query.length) === query ||
+                  item.last_name.toLowerCase().slice(0, query.length) === query) &&
+                //remove results that already persist in schema, from search results
+                store.nodes.findIndex((user) => user.id === item.id) == -1
             )
             .map(
               (item) =>
@@ -47,26 +48,12 @@ export default {
                 )
             )
         );
+        store.toggleLoading();
         //console.log(store.users);
       }
+
+      this.$emit("onSearch", this.searchStart);
     },
   },
 };
 </script>
-
-<style lang="scss" scoped>
-input[type="text"] {
-  width: 90%;
-  margin: 20px auto 0 auto;
-  border-radius: 10px;
-  height: 30px;
-  border: 0.5px #e2e8f0 solid;
-  font-size: 0.9rem;
-  padding: 1.5px 2px;
-
-  &:focus {
-    outline: none !important;
-    box-shadow: 0px 0px 0px 3px rgba(0, 144, 237, 0.4);
-  }
-}
-</style>

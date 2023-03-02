@@ -41,7 +41,12 @@
     </Transition>
   </div>
   <div v-else="node.type === 'block'" class="flowy-node-wrapper wrapper-block">
-    <div class="text" v-html="descr"></div>
+    <div
+      :contenteditable="render"
+      class="text"
+      v-html="descr"
+      v-on:focusout="(e) => updateDescr(node, e.target.textContent)"
+    ></div>
 
     <div class="drag-handle-wrapper" v-if="render">
       <flowy-drag-handle>
@@ -107,11 +112,12 @@ export default {
   methods: {
     updatePositionName(node, value) {
       node.data.position_name = value;
-      console.log(node);
+      store.toggleShemaStatus(true);
     },
     updateDescr(node, value) {
-      node.data.descr = value;
       console.log(node);
+      node.data.descr = value;
+      store.toggleShemaStatus(true);
     },
   },
 };

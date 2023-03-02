@@ -28,4 +28,14 @@ export const store = reactive({
     const index = this.users.findIndex((item) => item.id === userId);
     this.users.splice(index, 1);
   },
+
+  loading: false,
+  toggleLoading() {
+    this.loading = !this.loading;
+  },
+
+  shemaIsUpdated: false,
+  toggleShemaStatus(/**@type {Boolean} */ updateStatus) {
+    this.shemaIsUpdated = updateStatus;
+  },
 });

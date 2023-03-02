@@ -10,8 +10,10 @@
       <label for="radio-set-dependent-block"> зависимый </label>
     </div>
 
-    <button
-      @click="
+    <BtnSubmit
+      v-if="!blockModalOpened"
+      :content="!blockIsInQueue ? 'Добавить подгруппу' : 'Удалить подгруппу'"
+      @onSubmit="
         () => {
           if (!blockIsInQueue) {
             openBlockModal();
@@ -21,9 +23,7 @@
           }
         }
       "
-    >
-      {{ !blockIsInQueue ? "Добавить" : "Удалить" }} подгруппу
-    </button>
+    />
 
     <div v-if="blockIsInQueue">
       <flowy-new-block @drag-stop="handleDragStop">
@@ -39,10 +39,12 @@
 
     <!--Modal Start-->
     <div class="block-modal" v-if="blockModalOpened">
-      <button @click="closeBlockModal">x</button>
-      <label> Введите название подгруппы </label>
+      <BtnClose @onClose="closeBlockModal" />
+      <!-- <button class="btn-close-modal" @click="closeBlockModal">x</button> -->
+      <h4>Введите название подгруппы</h4>
       <input type="text" v-model="blockSelf.data.descr" />
       <button
+        class="btn btn-create-block"
         @click="
           () => {
             addBlock();
@@ -61,6 +63,8 @@
 <script>
 import { Block } from "../lib/constructors/Block";
 import { store } from "../store";
+import BtnClose from "./BtnClose.vue";
+import BtnSubmit from "./BtnSubmit.vue";
 
 export default {
   name: "BlockAdder",
@@ -82,6 +86,10 @@ export default {
     },
   },
 
+  components: {
+    BtnClose,
+    BtnSubmit,
+  },
   methods: {
     createBlock() {
       //!!! Присвоить id последнего юзера в списке, пока стоит временная генерация:
@@ -100,6 +108,7 @@ export default {
     addBlock() {
       if (this.blockType === "root") {
         store.addNode(this.blockSelf);
+        store.toggleShemaStatus(true);
       } else {
         this.blockIsInQueue = true;
       }
@@ -126,3 +135,51 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+h4 {
+  color: #fff;
+}
+.btn {
+  margin: 20px auto;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 4.5px 8px;
+  border-radius: 5px;
+  transition: all 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+
+  &-open-modal {
+    &-visible {
+      background: #061f8f;
+    }
+
+    &-hide {
+      display: none;
+    }
+  }
+}
+
+.block-modal {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  max-height: 100%;
+  justify-content: space-evenly;
+  align-items: center;
+  background: rgba(14, 139, 150, 0.8);
+  border-radius: 10px;
+  padding: 0px 8.8px;
+  margin: 20px 0;
+
+  .btn-close-modal {
+    align-self: flex-end;
+  }
+
+  .btn-create-block {
+    background: #fe6b0c;
+    color: #fff;
+  }
+}
+</style>

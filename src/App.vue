@@ -1,5 +1,17 @@
 <template>
   <div class="h-screen w-screen bg-gray-200 flex flex-col flex-no-wrap overflow-none">
+    <Spinner :loading="store.loading" />
+
+    <div class="panel" ref="panel">
+      <div class="div-schema-update-warning" v-if="store.shemaIsUpdated">
+        <span> Схема обновлена!</span>
+        <ConfirmationModal
+          HTMLContent="<strong> Вы уверены, что хотите обновить схему? </strong>"
+        />
+      </div>
+      <Scaler @rangeChange="updateScale" />
+    </div>
+
     <div class="flex-grow flex flex-row flex-no-wrap overflow-hidden">
       <div
         v-if="renderUsersTab"
@@ -8,7 +20,7 @@
         ref="usersTab"
       >
         <div class="addtypes-radio-wrapper">
-          <span> Добавить: </span>
+          <h4>Добавить:</h4>
           <br />
           <input type="radio" id="radio-add-user" value="user" v-model="addType" />
           <label for="radio-add-user"> пользователя </label>
@@ -18,9 +30,9 @@
         </div>
 
         <div class="side z-50" v-if="addType === 'user'">
-          <SearchUsers />
+          <SearchUsers @onSearch="(searchStart) => toggleSearch(searchStart)" />
 
-          <div class="div-user-items" v-if="store.users.length > 0">
+          <div class="div-user-items" v-if="store.users.length && searchStart">
             <flowy-new-block
               v-for="item in store.users"
               :key="item.id"
@@ -54,7 +66,9 @@
               </template>
             </flowy-new-block>
           </div>
-          <p style="margin: 20px" v-else>Пользователи не найдены.</p>
+          <h4 style="margin: 20px" v-else-if="store.users.length === 0 && searchStart">
+            Пользователи не найдены.
+          </h4>
         </div>
         <div class="side z-50" v-else>
           <BlockAdder :on-drag-stop="onDragStopNewBlock" />
@@ -70,6 +84,7 @@
           v-if="store.nodes.length > 0"
           class="h-full w-full p-6"
           :nodes="store.nodes"
+          :scale="schemaScale"
           @drag-start="onDragStart"
           @add="add"
           @move="move"
@@ -93,6 +108,9 @@ import SearchUsers from "./components/SearchUsers.vue";
 import { User } from "./lib/constructors/User";
 import BlockAdder from "./components/BlockAdder.vue";
 import { Block } from "./lib/constructors/Block";
+import Spinner from "./components/Spinner.vue";
+import Scaler from "./components/Scaler.vue";
+import ConfirmationModal from "./components/ConfirmationModal.vue";
 
 export default {
   name: "app",
@@ -108,11 +126,30 @@ export default {
     renderUsersTab: false,
     usersTab: null,
     schemeWrapper: null,
+    searchStart: false,
+    schemaScale: "0.85",
+    panel: null,
   }),
 
-  components: { SearchUsers, BlockAdder },
+  components: { SearchUsers, BlockAdder, Spinner, Scaler, ConfirmationModal },
+
+  async created() {
+    store.toggleLoading();
+    await getCurrentUser().then(async (res) => {
+      store.getUser(res);
+      //here we check if current user is allowed to update scheme
+      this.renderUsersTab = store.adminsIds.includes(store.user.id);
+      //this.nodes = await getUsersScheme();
+      store.getNodes(await getUsersScheme());
+      console.log(store.nodes);
+    });
+    store.toggleLoading();
+  },
 
   methods: {
+    toggleSearch(searchStart) {
+      this.searchStart = searchStart;
+    },
     swipeUsersTabCollapse() {
       this.usersTabCollapsed = !this.usersTabCollapsed;
 
@@ -120,6 +157,9 @@ export default {
         this.$refs.usersTab.style.display = this.usersTabCollapsed ? "none" : "block";
         //this.$refs.schemeWrapper.style.transform = "translateX(0)";
       }, 200);
+    },
+    updateScale(target) {
+      this.schemaScale = target.value;
     },
 
     onDragStartNewBlock(event) {
@@ -153,17 +193,17 @@ export default {
     addNode(_event) {
       //this.nodes.push(_event.node);
       store.addNode(_event.node);
+      store.toggleShemaStatus(true);
     },
     remove(event) {
-      // const nodeIndex = this.nodes.findIndex((node) => node.id === event.node.id);
-      // this.nodes.splice(nodeIndex, 1);
       store.removeNode(event.node.id);
+      store.toggleShemaStatus(true);
     },
     move(event) {
       console.log("move", event);
       const { dragged, to } = event;
       dragged.parentId = to.id;
-      console.log(store.nodes);
+      store.toggleShemaStatus(true);
     },
     add(event) {
       const id = event.node.data.id;
@@ -186,21 +226,12 @@ export default {
       //console.log(newNode);
 
       store.addNode(newNode);
+      store.toggleShemaStatus(true);
     },
     onDragStart(event) {
       console.log("onDragStart", event);
       this.dragging = true;
     },
-  },
-  async created() {
-    await getCurrentUser().then(async (res) => {
-      store.getUser(res);
-      //here we check if current user is allowed to update scheme
-      this.renderUsersTab = store.adminsIds.includes(store.user.id);
-      //this.nodes = await getUsersScheme();
-      store.getNodes(await getUsersScheme());
-      console.log(store.nodes);
-    });
   },
 };
 </script>
@@ -229,6 +260,21 @@ body {
   background-color: #fbfbfb;
 }
 
+input[type="text"] {
+  width: 90%;
+  margin: 20px auto 0 auto;
+  border-radius: 10px;
+  height: 30px;
+  border: 0.5px #e2e8f0 solid;
+  font-size: 0.9rem;
+  padding: 1.5px 6.6px;
+
+  &:focus {
+    outline: none !important;
+    box-shadow: 0px 0px 0px 3px rgba(0, 144, 237, 0.4);
+  }
+}
+
 .bg-gray-200 {
   background-color: #fbfbfb !important;
 }
@@ -244,6 +290,12 @@ div {
 
 h1 {
   margin: 0;
+}
+
+h4 {
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.2rem;
 }
 
 .dropzone {
@@ -285,6 +337,45 @@ img {
   min-height: 700px;
 }
 
+.panel {
+  position: fixed;
+  width: 20vw;
+  top: 2.3vh;
+  right: 1.5vw;
+  z-index: 10;
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.4s ease-in;
+  text-align: center;
+
+  .div-schema-update-warning {
+    span {
+      display: block;
+      color: #bd4028;
+      font-weight: 700;
+    }
+  }
+}
+
+.div-confirmation-modal {
+  background: rgba(194, 192, 188, 0.9);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 101vh;
+  width: 101vw;
+  right: 39vw;
+  top: -17vh;
+
+  .btn-close-modal {
+    position: absolute;
+    top: 5vh;
+    right: 5vw;
+  }
+}
+
 .scheme-wrapper,
 .users-tab-wrapper,
 .btn-swipe-collapse {
@@ -297,6 +388,7 @@ img {
 
 .users-tab-wrapper {
   flex: 0.5;
+  min-width: 380px;
   overflow: auto;
   background-color: #fbfbfb;
 

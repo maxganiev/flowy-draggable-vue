@@ -18,17 +18,15 @@
         :before-move="onBeforeMove"
         :before-add="onBeforeAdd"
         :is-dragging="dragging"
+        :scale="scale"
       >
       </FlowyNode>
     </div>
-
-    <Scaler v-on:rangeChange="updateScale" />
   </div>
 </template>
 
 <script>
 /* eslint-disable no-unused-vars */
-import Scaler from "./Scaler.vue";
 
 export default {
   props: {
@@ -46,16 +44,17 @@ export default {
       type: Function,
       default: () => true,
     },
+
+    scale: {
+      type: String,
+    },
   },
 
   data() {
     return {
       draggingNode: null,
-      scale: 1,
     };
   },
-
-  components: { Scaler },
 
   computed: {
     parentNodes() {
@@ -121,10 +120,6 @@ export default {
 
     getChildren(parentId) {
       return this.nodes.filter((node) => node.parentId === parentId);
-    },
-
-    updateScale(e) {
-      this.scale = e.target.value;
     },
   },
 };

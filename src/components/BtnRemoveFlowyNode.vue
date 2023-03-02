@@ -1,5 +1,5 @@
 <template>
-  <button v-if="render" class="btn btn-remove" @click="remove()">X</button>
+  <button v-if="render" class="btn btn-remove" @click="remove()">x</button>
 </template>
 
 <script>
