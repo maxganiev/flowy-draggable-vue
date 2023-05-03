@@ -1,5 +1,5 @@
 <template>
-  <div class="flowy-node">
+  <div class="flowy-node" data-node="flowy">
     <draggable
       class="flowy-draggable"
       group="flowy"
@@ -10,7 +10,6 @@
       :data="{ draggingNode: node }"
     >
       <!-- the node itself -->
-
       <flowy-block
         :data="node"
         class="draggable"
@@ -20,7 +19,6 @@
         <div class="dimensionBox" style="" ref="block" />
 
         <!-- Horizontal line -->
-
         <ConnectorLine
           verticalOffset
           v-if="!isTopParent && mounted"
@@ -29,9 +27,7 @@
         />
 
         <!-- Vertical line -->
-
         <ConnectorLine vertical v-if="hasChildren" :styling="lineMargins" :path="linePathDown" />
-
         <DropIndicator :show="showIndicator" :not-allowed="!dropAllowed" />
 
         <dropzone
@@ -74,12 +70,8 @@
 <script>
 /* eslint-disable */
 /* eslint-disable no-unused-vars */
-import find from "lodash/find";
-import filter from "lodash/filter";
-import isNil from "lodash/isNil";
 import get from "lodash/get";
 import cloneDeep from "lodash/cloneDeep";
-
 import ConnectorLine from "./ConnectorLine.vue";
 import DropIndicator from "./DropIndicator.vue";
 
@@ -318,6 +310,7 @@ export default {
       } else {
         // dragged from existing node
         const dropAllowed = this.beforeMove(toNode);
+
         if (dropAllowed) {
           this.moveNode(draggingNode, toNode);
         }

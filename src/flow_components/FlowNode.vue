@@ -2,6 +2,10 @@
   <div
     v-if="node.type === 'user'"
     class="flowy-node-wrapper wrapper-user relative rounded border border-gray-300"
+    :data-type="node.type"
+    :data-id="node.id"
+    :data-node="JSON.stringify(node)"
+    @dblclick="onDblclick"
   >
     <div class="flex flex-row flex-no-wrap justify-between items-center p-4 upper-block">
       <div class="flex flex-row flex-no-wrap justify-start items-center main-info-wrapper">
@@ -40,7 +44,14 @@
       ></div>
     </Transition>
   </div>
-  <div v-else="node.type === 'block'" class="flowy-node-wrapper wrapper-block">
+  <div
+    v-else="node.type === 'block'"
+    class="flowy-node-wrapper wrapper-block"
+    :data-type="node.type"
+    :data-id="node.id"
+    :data-node="JSON.stringify(node)"
+    @dblclick="onDblclick"
+  >
     <div
       :contenteditable="render"
       class="text"
@@ -63,9 +74,13 @@
 import BtnRemoveFlowyNode from "../components/BtnRemoveFlowyNode.vue";
 import BtnExpander from "../components/BtnExpander.vue";
 import { store } from "../store";
+import { User } from "../lib/constructors/User";
+import { Block } from "../lib/constructors/Block";
+import { calcSvgLinesZoom } from "../lib/calcSvgLinesZoom";
 
 export default {
   data: () => ({
+    store,
     showDescr: false,
     render: false,
     contenteditables: [],
@@ -110,6 +125,36 @@ export default {
   },
 
   methods: {
+    onDblclick(e) {
+      const confirmedNewStructure = window.confirm(
+        "Создать отдельную подчиненность для текущего блока?"
+      );
+
+      const rootEl = e.target.closest(".flowy-node-wrapper");
+
+      if (confirmedNewStructure) {
+        store.removeNode(Number(rootEl.getAttribute("data-id")));
+
+        const node = JSON.parse(rootEl.getAttribute("data-node"));
+
+        if (rootEl.getAttribute("data-type") === "user")
+          store.addNode(
+            new User(
+              -1,
+              node.id,
+              node.dep_id,
+              node.data.full_name_short,
+              node.data.avatar_thumb,
+              node.data.position_name,
+              node.data.descr
+            )
+          );
+        else store.addNode(new Block(-1, node.id, node.data.descr));
+
+        //updating SVG lines zoom:
+        calcSvgLinesZoom("flowy-line", document.getElementById("scaler").value);
+      }
+    },
     updatePositionName(node, value) {
       node.data.position_name = value;
       store.toggleShemaStatus(true);
@@ -129,6 +174,7 @@ export default {
   height: auto;
   border-radius: 20px;
   overflow: hidden;
+  cursor: default;
 }
 
 .wrapper-block {

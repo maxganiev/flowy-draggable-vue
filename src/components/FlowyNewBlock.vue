@@ -2,7 +2,7 @@
   <div class="flowy-block mr-24px relative">
     <draggable
       :with-handle="false"
-      :draggable-mirror="{ xAxis: false, appendTo: 'body' }"
+      :draggable-mirror="{ xAxis: false, appendTo: 'html' }"
       group="flowy"
       @start="onStart(nodeData)"
       @stop="onStop(nodeData)"
@@ -50,3 +50,9 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.flowy-block {
+  z-index: 10000;
+}
+</style>

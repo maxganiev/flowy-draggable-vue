@@ -26,7 +26,7 @@
     />
 
     <div v-if="blockIsInQueue">
-      <flowy-new-block @drag-stop="handleDragStop">
+      <flowy-new-block @drag-stop="handleDragStop" @drag-start="handleDragStart">
         <template v-slot:preview="{}">
           <flow-block-tab :id="blockSelf.id" :descr="blockSelf.data.descr" />
         </template>
@@ -76,10 +76,10 @@ export default {
     blockSelf: new Block(),
   }),
   props: {
-    // dragStart: {
-    //   type: Function,
-    //   required: true,
-    // },
+    onDragStart: {
+      type: Function,
+      required: true,
+    },
     onDragStop: {
       type: Function,
       required: true,
@@ -127,6 +127,9 @@ export default {
           inline: "start",
         });
       }, 100);
+    },
+    handleDragStart() {
+      this.onDragStart();
     },
     handleDragStop() {
       this.onDragStop();

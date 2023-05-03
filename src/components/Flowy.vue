@@ -1,17 +1,28 @@
 <template>
   <div
-    class="flowy overflow-auto"
+    class="flowy overflow-hidden"
+    id="flowy"
     :class="{
       dragging: dragging,
     }"
   >
-    <div id="flowy-tree" :style="{ transform: `scale(${this.scale})` }" ref="elem">
+    <div
+      id="flowy-tree"
+      :style="{
+        transform: `translateX(${this.transBaseX}px) translateY(${this.transBaseY}px) scale(${this.scale})`,
+      }"
+      ref="elem"
+      @mousedown="onMouseDown"
+      @mouseup="onMouseUp"
+      @mouseleave="onMouseUp"
+      @mousemove="onMouseMove"
+    >
       <FlowyNode
+        v-for="node in parentNodes"
         v-bind="{ ...$props }"
         v-on="{ ...$listeners }"
         :node="node"
         :key="node.id"
-        v-for="node in parentNodes"
         @drag-start="onDragStart($event)"
         @drag-stop="onDragStop($event)"
         @enter-drop="onEnterDrop($event)"
@@ -26,6 +37,8 @@
 </template>
 
 <script>
+import Mirror from "./Mirror.vue";
+import Vue from "vue";
 /* eslint-disable no-unused-vars */
 
 export default {
@@ -52,7 +65,16 @@ export default {
 
   data() {
     return {
+      elem: null,
       draggingNode: null,
+      schemaClicked: false,
+      left: 0,
+      top: 0,
+      transBaseX: 0,
+      transBaseY: 0,
+
+      MirrorConstructor: Vue.extend(Mirror),
+      flowyNodeMirror: null,
     };
   },
 
@@ -75,6 +97,77 @@ export default {
   },
 
   methods: {
+    onMouseDown(e) {
+      if (e.target.getAttribute("data-node") === "flowy") this.dragShema(e);
+      if (e.target.parentElement.className === "flowy-drag-handle") this.createFlowyNodeMirror(e);
+    },
+
+    onMouseUp(e) {
+      this.schemaClicked = false;
+
+      if (this.flowyNodeMirror && e.type !== "mouseleave") {
+        this.flowyNodeMirror = null;
+        document.getElementById("flowy-node-mirror").remove();
+        document.body.removeEventListener("mousemove", this.dragFlowyNodeMirror);
+        document.getElementById("flowy").style.cursor = "grab";
+      }
+    },
+
+    onMouseMove(e) {
+      if (!this.schemaClicked) return;
+
+      const rect = this.$refs.elem.getBoundingClientRect();
+
+      //x limits
+      // if (rect.left >= 0 && (rect.left / document.body.clientWidth) * 100 >= 90)
+      //   this.transBaseX -= 40;
+      // if (rect.left < 0 && rect.right <= 240) this.transBaseX += 40;
+
+      //x
+      if (this.left > e.clientX) this.transBaseX -= 10;
+      if (this.left < e.clientX) this.transBaseX += 10;
+      //y
+      if (this.top > e.clientY) this.transBaseY -= 10;
+      if (this.top < e.clientY) this.transBaseY += 10;
+
+      const scaleFactor = (rect.width / this.$refs.elem.offsetWidth).toFixed(2);
+
+      this.$refs.elem.style.transform = `translateX(${this.transBaseX}px) translateY(${this.transBaseY}px) scale(${scaleFactor})`;
+      if (this.left !== e.clientX) this.left = e.clientX;
+      this.top = e.clientY;
+    },
+
+    dragShema(e) {
+      if (e.target.getAttribute("data-node") !== "flowy") return;
+      this.schemaClicked = true;
+    },
+
+    createFlowyNodeMirror(e) {
+      if (e.target.parentElement.className !== "flowy-drag-handle") return;
+
+      const ref = this.$refs.elem;
+      this.flowyNodeMirror = new this.MirrorConstructor({
+        propsData: {
+          top: e.clientY,
+          left: e.clientX - e.target.closest(".flowy-node-wrapper").getBoundingClientRect().width,
+          transform: `scale(${(ref.getBoundingClientRect().width / ref.offsetWidth).toFixed(2)})`,
+          content: e.target.closest(".flowy-node-wrapper").innerHTML,
+        },
+      });
+      this.flowyNodeMirror.$mount();
+      document.body.appendChild(this.flowyNodeMirror.$el);
+      document.body.addEventListener("mousemove", this.dragFlowyNodeMirror);
+      document.getElementById("flowy").style.cursor = "crosshair";
+    },
+
+    dragFlowyNodeMirror(e) {
+      const el = this.flowyNodeMirror.$el;
+      const rect = el.getBoundingClientRect();
+
+      el.style.top = e.clientY + "px";
+      el.style.left = e.clientX - rect.width + "px";
+    },
+
     setNotDragging() {
       setTimeout(() => {
         this.draggingNode = null;
@@ -96,19 +189,11 @@ export default {
     onDragStart(event) {
       this.draggingNode = event.node;
       this.$emit("drag-start", event);
-
-      setTimeout(() => {
-        this.$refs.elem.style.transform = "unset";
-      }, 50);
     },
 
     onDragStop(event) {
       this.setNotDragging();
       this.$emit("drag-stop", event);
-
-      setTimeout(() => {
-        this.$refs.elem.style.transform = `scale(${this.scale})`;
-      }, 50);
     },
 
     onEnterDrop(event) {
@@ -137,6 +222,8 @@ export default {
 
 .flowy-node {
   transition: all 0.3s;
+  background-color: #f0f0f0;
+  padding: 5px;
   @extend .flex, .flex-col, .flex-no-wrap, .items-center, .relative, .overflow-visible;
 }
 

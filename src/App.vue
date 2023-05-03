@@ -3,7 +3,8 @@
     <Spinner :loading="store.loading" />
 
     <div class="panel" ref="panel">
-      <div class="div-schema-update-warning" v-if="store.shemaIsUpdated">
+      <div class="div-schema-update-warning" v-if="store.shemaIsUpdated && showSchemaUpdateWarning">
+        <BtnClose @onClose="() => (showSchemaUpdateWarning = false)" />
         <span> Схема обновлена!</span>
         <ConfirmationModal
           HTMLContent="<strong> Вы уверены, что хотите обновить схему? </strong>"
@@ -32,7 +33,11 @@
         <div class="side z-50" v-if="addType === 'user'">
           <SearchUsers @onSearch="(searchStart) => toggleSearch(searchStart)" />
 
-          <div class="div-user-items" v-if="store.users.length && searchStart">
+          <div
+            class="div-user-items"
+            v-if="store.users.length && searchStart"
+            @mousedown="onMousedown"
+          >
             <flowy-new-block
               v-for="item in store.users"
               :key="item.id"
@@ -70,8 +75,8 @@
             Пользователи не найдены.
           </h4>
         </div>
-        <div class="side z-50" v-else>
-          <BlockAdder :on-drag-stop="onDragStopNewBlock" />
+        <div class="side z-50" @mousedown="onMousedown" v-else>
+          <BlockAdder :on-drag-start="onDragStartNewBlock" :on-drag-stop="onDragStopNewBlock" />
         </div>
       </div>
 
@@ -79,7 +84,7 @@
         {{ !usersTabCollapsed ? "-" : "+" }}
       </button>
 
-      <div class="flex-grow overflow-auto scheme-wrapper" ref="schemeWrapper">
+      <div class="flex-grow overflow-auto scheme-wrapper" id="schemeWrapper" ref="schemeWrapper">
         <flowy
           v-if="store.nodes.length > 0"
           class="h-full w-full p-6"
@@ -111,6 +116,10 @@ import { Block } from "./lib/constructors/Block";
 import Spinner from "./components/Spinner.vue";
 import Scaler from "./components/Scaler.vue";
 import ConfirmationModal from "./components/ConfirmationModal.vue";
+import BtnClose from "./components/BtnClose.vue";
+import Vue from "vue";
+import Mirror from "./components/Mirror.vue";
+import { calcSvgLinesZoom } from "./lib/calcSvgLinesZoom";
 
 export default {
   name: "app",
@@ -129,9 +138,14 @@ export default {
     searchStart: false,
     schemaScale: "0.85",
     panel: null,
+    showSchemaUpdateWarning: true,
+    ref: null,
+
+    MirrorConstructor: Vue.extend(Mirror),
+    flowyNodeMirror: null,
   }),
 
-  components: { SearchUsers, BlockAdder, Spinner, Scaler, ConfirmationModal },
+  components: { SearchUsers, BlockAdder, Spinner, Scaler, ConfirmationModal, BtnClose },
 
   async created() {
     store.toggleLoading();
@@ -155,26 +169,70 @@ export default {
 
       setTimeout(() => {
         this.$refs.usersTab.style.display = this.usersTabCollapsed ? "none" : "block";
-        //this.$refs.schemeWrapper.style.transform = "translateX(0)";
       }, 200);
     },
     updateScale(target) {
       this.schemaScale = target.value;
     },
+    onMousedown(e) {
+      if (e.target.parentElement.parentElement.className === "flowy-drag-handle")
+        this.createFlowyNodeMirror(e);
+    },
+
+    createFlowyNodeMirror(e) {
+      if (e.target.parentElement.parentElement.className !== "flowy-drag-handle") return;
+
+      const closestEl =
+        this.addType === "user"
+          ? e.target.closest(".user-block")
+          : e.target.closest(".flow-block-tab");
+
+      this.flowyNodeMirror = new this.MirrorConstructor({
+        propsData: {
+          top: e.clientY,
+          left: e.clientX - closestEl.getBoundingClientRect().width,
+          transform: "1",
+          content: closestEl.innerHTML,
+        },
+      });
+      this.flowyNodeMirror.$mount();
+      document.body.appendChild(this.flowyNodeMirror.$el);
+      document.body.addEventListener("mousemove", this.dragFlowyNodeMirror);
+      document.getElementById("flowy").style.cursor = "crosshair";
+    },
+
+    dragFlowyNodeMirror(e) {
+      const el = this.flowyNodeMirror.$el;
+      const rect = el.getBoundingClientRect();
+
+      el.style.top = e.clientY + "px";
+      el.style.left = e.clientX - rect.width + "px";
+    },
 
     onDragStartNewBlock(event) {
       console.log("onDragStartNewBlock", event);
       this.newDraggingBlock = event;
-      this.$refs.usersTab.style.transform = "unset";
     },
     onDragStopNewBlock(event) {
       console.log("onDragStopNewBlock", event);
       this.newDraggingBlock = null;
+
+      if (this.flowyNodeMirror) {
+        this.flowyNodeMirror = null;
+        document.getElementById("flowy-node-mirror").remove();
+        document.body.removeEventListener("mousemove", this.dragFlowyNodeMirror);
+        document.getElementById("flowy").style.cursor = "grab";
+      }
     },
     onDropBlock(_event) {},
     beforeAdd(event) {
       console.log("before add", event);
       store.removeAddedUser(event.to.data.id);
+
+      setTimeout(() => {
+        //updating SVG lines zoom:
+        calcSvgLinesZoom("flowy-line", document.getElementById("scaler").value);
+      }, 150);
       return true;
     },
     afterAdd() {},
@@ -208,6 +266,7 @@ export default {
     add(event) {
       const id = event.node.data.id;
       console.log(event);
+
       let newNode = {};
 
       if (event.node.data.type === "user") {
@@ -239,6 +298,7 @@ export default {
 <style lang="scss">
 @import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,600&display=swap");
 @import url("https://fonts.googleapis.com/css?family=Roboto:100&display=swap");
+
 html,
 body {
   font-family: "Open Sans", sans-serif;
@@ -254,10 +314,14 @@ body {
 }
 
 .flowy {
-  background-image: url("/flowy-vue/demo_assets/tile.png");
   background-repeat: repeat;
   background-size: 30px 30px;
   background-color: #fbfbfb;
+  cursor: grab;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 input[type="text"] {
@@ -351,6 +415,13 @@ img {
   text-align: center;
 
   .div-schema-update-warning {
+    display: flex;
+    flex-direction: column;
+
+    .btn-close-modal {
+      align-self: flex-end;
+      margin-bottom: 10px;
+    }
     span {
       display: block;
       color: #bd4028;
@@ -400,6 +471,7 @@ img {
         background-color: #0e8a96;
         width: 80%;
         height: auto;
+        //min-height: 150px;
         border-radius: 20px;
         font-size: 0.85rem;
 
@@ -465,7 +537,9 @@ button {
   width: 320px;
 }
 
+.user-block.draggable-item.draggable-mirror,
 .flowy-block.draggable-mirror {
-  opacity: 1;
+  //opacity: 1;
+  display: none;
 }
 </style>

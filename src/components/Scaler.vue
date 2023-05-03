@@ -2,7 +2,7 @@
   <input
     type="range"
     min="0"
-    max="2"
+    max="1"
     step="0.05"
     v-model="zoom"
     v-on:input="(e) => handleChange(e)"
@@ -12,10 +12,11 @@
 </template>
 
 <script>
+import { calcSvgLinesZoom } from "../lib/calcSvgLinesZoom";
 export default {
   name: "Scaler",
   data: () => ({
-    zoom: "0.85",
+    zoom: "1",
     elem: null,
   }),
 
@@ -36,6 +37,9 @@ export default {
       const val = target.value;
 
       target.style.backgroundSize = ((val - min) * 100) / (max - min) + "% 100%";
+
+      //updating SVG lines zoom:
+      calcSvgLinesZoom("flowy-line", val);
     },
   },
 };
