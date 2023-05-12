@@ -5,6 +5,10 @@
     :class="{
       dragging: dragging,
     }"
+    @mousedown="onMouseDown"
+    @mouseup="onMouseUp"
+    @mouseleave="onMouseUp"
+    @mousemove="onMouseMove"
   >
     <div
       id="flowy-tree"
@@ -23,13 +27,13 @@
         v-on="{ ...$listeners }"
         :node="node"
         :key="node.id"
+        :scale="scale"
         @drag-start="onDragStart($event)"
         @drag-stop="onDragStop($event)"
         @enter-drop="onEnterDrop($event)"
         :before-move="onBeforeMove"
         :before-add="onBeforeAdd"
         :is-dragging="dragging"
-        :scale="scale"
       >
       </FlowyNode>
     </div>
@@ -92,20 +96,21 @@ export default {
     },
   },
 
-  mounted() {
-    this.scale = document.getElementById("scaler").value;
-  },
-
   methods: {
     onMouseDown(e) {
-      if (e.target.getAttribute("data-node") === "flowy") this.dragShema(e);
+      if (
+        e.target.getAttribute("data-node") === "flowy" ||
+        e.target.getAttribute("data-tree") === "flowy-tree" ||
+        e.target.id === "flowy"
+      )
+        this.dragShema(e);
       if (e.target.parentElement.className === "flowy-drag-handle") this.createFlowyNodeMirror(e);
     },
 
     onMouseUp(e) {
       this.schemaClicked = false;
 
-      if (this.flowyNodeMirror && e.type !== "mouseleave") {
+      if (document.getElementById("flowy-node-mirror") && e.type !== "mouseleave") {
         this.flowyNodeMirror = null;
         document.getElementById("flowy-node-mirror").remove();
         document.body.removeEventListener("mousemove", this.dragFlowyNodeMirror);
@@ -138,7 +143,12 @@ export default {
     },
 
     dragShema(e) {
-      if (e.target.getAttribute("data-node") !== "flowy") return;
+      if (
+        e.target.getAttribute("data-node") !== "flowy" &&
+        e.target.getAttribute("data-tree") !== "flowy-tree" &&
+        e.target.id !== "flowy"
+      )
+        return;
       this.schemaClicked = true;
     },
 
@@ -148,7 +158,7 @@ export default {
       const ref = this.$refs.elem;
       this.flowyNodeMirror = new this.MirrorConstructor({
         propsData: {
-          top: e.clientY,
+          top: e.pageY,
           left: e.clientX - e.target.closest(".flowy-node-wrapper").getBoundingClientRect().width,
           transform: `scale(${(ref.getBoundingClientRect().width / ref.offsetWidth).toFixed(2)})`,
           content: e.target.closest(".flowy-node-wrapper").innerHTML,
@@ -164,7 +174,7 @@ export default {
       const el = this.flowyNodeMirror.$el;
       const rect = el.getBoundingClientRect();
 
-      el.style.top = e.clientY + "px";
+      el.style.top = e.pageY + "px";
       el.style.left = e.clientX - rect.width + "px";
     },
 
@@ -222,7 +232,7 @@ export default {
 
 .flowy-node {
   transition: all 0.3s;
-  background-color: #f0f0f0;
+  //background-color: #f0f0f0;
   padding: 5px;
   @extend .flex, .flex-col, .flex-no-wrap, .items-center, .relative, .overflow-visible;
 }

@@ -6,7 +6,8 @@ export class User {
     /**@type {String}*/ full_name_short,
     /**@type {String | null}*/ avatar_thumb,
     /**@type {String}*/ position_name,
-    /**@type {String | null}*/ descr
+    /**@type {String | null}*/ descr,
+    /**@type {Number} @desc {кол-во px, на которые необходимо сместить текущий нод по У, начиная от 0 (x100)} */ top
   ) {
     this.parentId = parentId;
     this.id = id;
@@ -18,6 +19,7 @@ export class User {
       descr,
       profileUrl: `#/profile/${this.id}`,
     };
+    this.top = top;
   }
 
   get nodeComponent() {

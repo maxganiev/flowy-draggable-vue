@@ -42,7 +42,7 @@ export default {
 .expander {
   position: absolute;
   bottom: 5px;
-  right: 5px;
+  right: 15px;
   background: #fe6b0c;
   color: #fff;
   font-weight: 700;

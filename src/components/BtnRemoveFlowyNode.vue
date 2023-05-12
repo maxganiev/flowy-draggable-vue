@@ -27,7 +27,7 @@ export default {
 .btn-remove {
   position: absolute;
   bottom: 45px;
-  right: 5px;
+  right: 15px;
   background: #bd4028;
   color: #fff;
   font-weight: 700;

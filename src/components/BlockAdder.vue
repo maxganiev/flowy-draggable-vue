@@ -28,11 +28,11 @@
     <div v-if="blockIsInQueue">
       <flowy-new-block @drag-stop="handleDragStop" @drag-start="handleDragStart">
         <template v-slot:preview="{}">
-          <flow-block-tab :id="blockSelf.id" :descr="blockSelf.data.descr" />
+          <flow-block-tab :id="blockSelf.id" :descr="blockSelf.data.descr" :top="blockSelf.top" />
         </template>
 
         <template v-slot:node="{}">
-          <flow-node :id="blockSelf.id" :descr="blockSelf.data.descr" />
+          <flow-node :id="blockSelf.id" :descr="blockSelf.data.descr" :top="blockSelf.top" />
         </template>
       </flowy-new-block>
     </div>
@@ -96,7 +96,8 @@ export default {
       this.blockSelf = new Block(
         -1,
         Math.floor(Math.random() * (5000 - 3000) + 3000),
-        "Привет, я блок!"
+        "Привет, я блок!",
+        0
       );
     },
     openBlockModal() {

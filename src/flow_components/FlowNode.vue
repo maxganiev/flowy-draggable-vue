@@ -30,6 +30,8 @@
         </flowy-drag-handle>
       </div>
 
+      <TransformPanel @onNodeUp="nodeUp.call(this, node)" @onNodeDown="nodeDown.call(this, node)" />
+
       <BtnRemoveFlowyNode :remove="remove" />
       <BtnExpander :callback="() => (showDescr = !showDescr)" :isClosed="!showDescr" />
     </div>
@@ -65,6 +67,7 @@
       </flowy-drag-handle>
     </div>
 
+    <TransformPanel @onNodeUp="nodeUp.call(this, node)" @onNodeDown="nodeDown.call(this, node)" />
     <BtnRemoveFlowyNode :remove="remove" />
   </div>
 </template>
@@ -76,7 +79,7 @@ import BtnExpander from "../components/BtnExpander.vue";
 import { store } from "../store";
 import { User } from "../lib/constructors/User";
 import { Block } from "../lib/constructors/Block";
-import { calcSvgLinesZoom } from "../lib/calcSvgLinesZoom";
+import TransformPanel from "../components/TransformPanel.vue";
 
 export default {
   data: () => ({
@@ -118,7 +121,7 @@ export default {
     },
   },
 
-  components: { BtnRemoveFlowyNode, BtnExpander },
+  components: { BtnRemoveFlowyNode, BtnExpander, TransformPanel },
   beforeMount() {
     //here we check if current user is allowed to update scheme
     this.render = store.adminsIds.includes(store.user.id);
@@ -146,23 +149,47 @@ export default {
               node.data.full_name_short,
               node.data.avatar_thumb,
               node.data.position_name,
-              node.data.descr
+              node.data.descr,
+              0
             )
           );
-        else store.addNode(new Block(-1, node.id, node.data.descr));
-
-        //updating SVG lines zoom:
-        calcSvgLinesZoom("flowy-line", document.getElementById("scaler").value);
+        else store.addNode(new Block(-1, node.id, node.data.descr, 0));
       }
     },
+
     updatePositionName(node, value) {
       node.data.position_name = value;
       store.toggleShemaStatus(true);
     },
+
     updateDescr(node, value) {
       console.log(node);
       node.data.descr = value;
       store.toggleShemaStatus(true);
+    },
+
+    nodeUp(node) {
+      if (node.top - 100 < 0) return;
+      node.top -= 100;
+      node.parentId !== -1 && this.hideLineOnTranslate();
+    },
+
+    nodeDown(node) {
+      node.top += 100;
+      node.parentId !== -1 && this.hideLineOnTranslate();
+    },
+
+    hideLineOnTranslate() {
+      const line = [...this.$el.closest(".flowy-block").children].find((child) =>
+        child.classList.contains("flowy-line-block")
+      );
+
+      if (!line) throw new Error("Check class spelling!");
+
+      line.style.opacity = "0";
+      setTimeout(() => {
+        line.style.opacity = "1";
+      }, 200);
     },
   },
 };
@@ -171,9 +198,9 @@ export default {
 <style lang="scss" scoped>
 .flowy-node-wrapper {
   width: 320px;
-  height: auto;
+  height: 200px;
   border-radius: 20px;
-  overflow: hidden;
+  overflow: scroll;
   cursor: default;
 }
 
@@ -193,6 +220,7 @@ export default {
 }
 .upper-block {
   background-color: #0e8a96;
+  height: 100%;
 
   .main-info-wrapper {
     position: relative;

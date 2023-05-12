@@ -44,7 +44,8 @@ export default {
                   item.full_name_short,
                   item.avatar_thumb,
                   item.position_name,
-                  item.descr
+                  item.descr,
+                  0
                 )
             )
         );

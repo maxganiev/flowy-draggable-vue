@@ -1,5 +1,5 @@
 <template>
-  <div class="flowy-node" data-node="flowy">
+  <div class="flowy-node" data-node="flowy" :style="`transform: translateY(${node.top}px);`">
     <draggable
       class="flowy-draggable"
       group="flowy"
@@ -22,12 +22,25 @@
         <ConnectorLine
           verticalOffset
           v-if="!isTopParent && mounted"
-          :styling="lineMargins"
+          :styling="{
+            ...lineMargins,
+            zoom,
+            transform: `translateY(-${baseTrY + translateY}px) scale(${zoom})`,
+          }"
           :path="linePath"
         />
 
         <!-- Vertical line -->
-        <ConnectorLine vertical v-if="hasChildren" :styling="lineMargins" :path="linePathDown" />
+        <!-- <ConnectorLine
+          vertical
+          v-if="hasChildren"
+          :styling="{
+            ...lineMargins,
+            zoom,
+            transform: `translateY(-${translateY}px) scale(${zoom})`,
+          }"
+          :path="linePathDown"
+        /> -->
         <DropIndicator :show="showIndicator" :not-allowed="!dropAllowed" />
 
         <dropzone
@@ -50,11 +63,15 @@
 
     <!-- children tree -->
 
-    <div class="flowy-tree flex flex-row flex-no-wrap overflow-visible mt-64px">
+    <div
+      class="flowy-tree flex flex-row flex-no-wrap overflow-visible mt-64px"
+      data-tree="flowy-tree"
+    >
       <template v-for="(child, index) in children">
         <flowy-node
           v-bind="{ ...$props }"
           v-on="{ ...$listeners }"
+          :top="child.top"
           :index="index"
           :total-children="children.length"
           :node="child"
@@ -130,6 +147,15 @@ export default {
     isDragging: {
       type: Boolean,
     },
+
+    scale: {
+      type: String,
+    },
+
+    top: {
+      type: Number,
+      default: 0,
+    },
   },
 
   data() {
@@ -140,6 +166,7 @@ export default {
       width: 0,
       dropAllowed: true,
       timer: null,
+      baseTrY: 20,
     };
   },
 
@@ -161,6 +188,14 @@ export default {
   },
 
   computed: {
+    zoom() {
+      return this.scale == 1 ? "unset" : "1." + (1 - this.scale).toString().split(".")[1];
+    },
+
+    translateY() {
+      return this.zoom !== "unset" ? this.top / this.zoom : "0";
+    },
+
     xPos() {
       if (!this.mounted) return 0;
       return this.xPosProxy;
@@ -175,7 +210,9 @@ export default {
     },
 
     lineMargins() {
-      return { marginLeft: `${this.blockWidth / 2}px` };
+      return {
+        marginLeft: `${this.blockWidth / 2}px`,
+      };
     },
 
     lineTotalHeight() {
@@ -226,17 +263,25 @@ export default {
       return this.node.props;
     },
 
+    /**
+     * vertical connector line - temporarily removed
     linePathDown() {
-      const lineHeight = this.lineTotalHeight;
-      return `M0 0L0 ${lineHeight / 2}L0 ${lineHeight / 2}L0 ${lineHeight / 2}`;
+      const lineHeight = this.lineTotalHeight / 2;
+      const topCoeff = Number(this.scale) >= 1 ? this.top / this.scale : this.top * this.scale;
+      return `M0 0L0 ${lineHeight}L0 ${lineHeight}L0 ${lineHeight + topCoeff}`;
     },
+    */
 
     linePath() {
       const height = this.lineTotalHeight / 2;
       const width = this.lengthFromMiddle;
       const modifier = this.isLeftSide ? "" : "-";
+      const topCoeff =
+        this.scale >= 1 ? this.top / this.scale : this.top * this.scale + this.baseTrY;
 
-      return `M${modifier}${width} ${height}L${modifier}${width} ${height}L0 ${height}L0 ${this.lineTotalHeight}`;
+      return `M${modifier}${width} ${height}L${modifier}${width} ${height}L0 ${height}L0 ${
+        this.lineTotalHeight + topCoeff
+      }`;
     },
 
     lengthFromMiddle() {
@@ -352,10 +397,14 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .dimension-box {
   position: absolute;
   width: 100%;
   height: 100%;
+}
+
+.flowy-tree {
+  z-index: -10;
 }
 </style>

@@ -1,5 +1,8 @@
 <template>
-  <div class="h-screen w-screen bg-gray-200 flex flex-col flex-no-wrap overflow-none">
+  <div
+    class="h-screen w-screen bg-gray-200 flex flex-col flex-no-wrap overflow-none"
+    style="height: auto; min-height: 100vh"
+  >
     <Spinner :loading="store.loading" />
 
     <div class="panel" ref="panel">
@@ -54,6 +57,7 @@
                   :position_name="item.data.position_name"
                   :profileUrl="item.data.profileUrl"
                   :descr="item.data.descr"
+                  :top="item.top"
                 />
               </template>
 
@@ -67,6 +71,7 @@
                   :position_name="item.data.position_name"
                   :profileUrl="item.data.profileUrl"
                   :descr="item.data.descr"
+                  :top="item.top"
                 />
               </template>
             </flowy-new-block>
@@ -119,7 +124,6 @@ import ConfirmationModal from "./components/ConfirmationModal.vue";
 import BtnClose from "./components/BtnClose.vue";
 import Vue from "vue";
 import Mirror from "./components/Mirror.vue";
-import { calcSvgLinesZoom } from "./lib/calcSvgLinesZoom";
 
 export default {
   name: "app",
@@ -136,7 +140,7 @@ export default {
     usersTab: null,
     schemeWrapper: null,
     searchStart: false,
-    schemaScale: "0.85",
+    schemaScale: null,
     panel: null,
     showSchemaUpdateWarning: true,
     ref: null,
@@ -153,11 +157,14 @@ export default {
       store.getUser(res);
       //here we check if current user is allowed to update scheme
       this.renderUsersTab = store.adminsIds.includes(store.user.id);
-      //this.nodes = await getUsersScheme();
       store.getNodes(await getUsersScheme());
       console.log(store.nodes);
     });
     store.toggleLoading();
+  },
+
+  mounted() {
+    this.schemaScale = document.getElementById("scaler").value;
   },
 
   methods: {
@@ -189,9 +196,9 @@ export default {
 
       this.flowyNodeMirror = new this.MirrorConstructor({
         propsData: {
-          top: e.clientY,
+          top: e.pageY,
           left: e.clientX - closestEl.getBoundingClientRect().width,
-          transform: "1",
+          transform: `scale(${this.schemaScale})`,
           content: closestEl.innerHTML,
         },
       });
@@ -205,7 +212,7 @@ export default {
       const el = this.flowyNodeMirror.$el;
       const rect = el.getBoundingClientRect();
 
-      el.style.top = e.clientY + "px";
+      el.style.top = e.pageY + "px";
       el.style.left = e.clientX - rect.width + "px";
     },
 
@@ -217,7 +224,7 @@ export default {
       console.log("onDragStopNewBlock", event);
       this.newDraggingBlock = null;
 
-      if (this.flowyNodeMirror) {
+      if (document.getElementById("flowy-node-mirror")) {
         this.flowyNodeMirror = null;
         document.getElementById("flowy-node-mirror").remove();
         document.body.removeEventListener("mousemove", this.dragFlowyNodeMirror);
@@ -229,10 +236,6 @@ export default {
       console.log("before add", event);
       store.removeAddedUser(event.to.data.id);
 
-      setTimeout(() => {
-        //updating SVG lines zoom:
-        calcSvgLinesZoom("flowy-line", document.getElementById("scaler").value);
-      }, 150);
       return true;
     },
     afterAdd() {},
@@ -261,28 +264,29 @@ export default {
       console.log("move", event);
       const { dragged, to } = event;
       dragged.parentId = to.id;
+      //dragged.top = to.top;
+
       store.toggleShemaStatus(true);
     },
     add(event) {
-      const id = event.node.data.id;
+      const { id, top } = event.node.data;
       console.log(event);
 
       let newNode = {};
 
       if (event.node.data.type === "user") {
-        const dep_id = event.node.data.dep_id;
+        const { dep_id, top } = event.node.data;
         newNode = new User();
         //fill values by keys:
         Object.keys(newNode).forEach((key) => (newNode[key] = event.node[key]));
-        newNode.dep_id = dep_id;
+        newNode.dep_id = event.node.data.dep_id;
       } else {
         newNode = new Block();
         //fill values by keys:
         Object.keys(newNode).forEach((key) => (newNode[key] = event.node[key]));
       }
       newNode.id = id;
-
-      //console.log(newNode);
+      newNode.top = top;
 
       store.addNode(newNode);
       store.toggleShemaStatus(true);

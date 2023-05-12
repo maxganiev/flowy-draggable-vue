@@ -63,6 +63,11 @@ export default {
       type: String | null,
       required: true,
     },
+
+    top: {
+      type: Number,
+      required: true,
+    },
   },
   data() {
     return {};
