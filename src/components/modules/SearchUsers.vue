@@ -6,9 +6,9 @@
 </template>
 
 <script>
-import { getAllUsers } from "../demo_data/getAllUsers";
-import { User } from "../lib/constructors/User";
-import { store } from "../store";
+import { getAllUsers } from "@/demo_data/getAllUsers";
+import { User } from "@/lib/constructors/User";
+import { store } from "@/store";
 
 export default {
   name: "searchUsers",
@@ -45,7 +45,8 @@ export default {
                   item.avatar_thumb,
                   item.position_name,
                   item.descr,
-                  0
+                  0,
+                  []
                 )
             )
         );
@@ -58,3 +59,15 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+input {
+  width: 90%;
+  margin: 20px auto 10px 2px;
+  border-radius: 10px;
+  height: 30px;
+  border: 0.5px #e2e8f0 solid;
+  font-size: 0.9rem;
+  padding: 1.5px 6.6px;
+}
+</style>

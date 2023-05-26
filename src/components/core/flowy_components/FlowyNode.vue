@@ -89,8 +89,8 @@
 /* eslint-disable no-unused-vars */
 import get from "lodash/get";
 import cloneDeep from "lodash/cloneDeep";
-import ConnectorLine from "./ConnectorLine.vue";
-import DropIndicator from "./DropIndicator.vue";
+import ConnectorLine from "core/flowy_parts/ConnectorLine.vue";
+import DropIndicator from "core/flowy_parts/DropIndicator.vue";
 
 function getOffset(el) {
   const rect = el.getBoundingClientRect();

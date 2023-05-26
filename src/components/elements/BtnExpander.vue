@@ -28,7 +28,7 @@ export default {
   methods: {
     scrollDown(e) {
       setTimeout(() => {
-        e.target.parentElement.nextElementSibling.scrollIntoView({
+        e.target.parentElement.parentElement.scrollIntoView({
           behavior: "smooth",
           block: this.isClosed ? "end" : "start",
         });
@@ -40,10 +40,7 @@ export default {
 
 <style lang="scss" scoped>
 .expander {
-  position: absolute;
-  bottom: 5px;
-  right: 15px;
-  background: #fe6b0c;
+  background: $clr-orange;
   color: #fff;
   font-weight: 700;
   width: 30px;

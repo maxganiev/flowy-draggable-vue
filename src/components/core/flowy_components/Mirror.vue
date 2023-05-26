@@ -47,16 +47,17 @@ export default {
 .mirror-wrapper {
   position: absolute;
   z-index: 1000;
-  background-color: #0e8a96;
-  min-width: 300px;
-  max-width: 300px;
-  min-height: 200px;
+  background-color: $clr-emerald;
+  width: 200px;
+  height: 150px;
   color: #fff;
   opacity: 0.6;
   text-align: center;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
-  font-size: 1.2rem;
+  font-size: $fs-sm;
+  padding: 5px 10px;
+  border-radius: 30px;
 }
 </style>

@@ -23,8 +23,7 @@
 	},
 	"dependencies": {
 		"@hipsjs/shopify-draggable-vue": "^1.0.7",
-		"lodash": "^4.17.15",
-		"sass": "^1.58.3"
+		"lodash": "^4.17.15"
 	},
 	"devDependencies": {
 		"@rushstack/eslint-patch": "^1.1.0",

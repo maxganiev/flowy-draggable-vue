@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { store } from "../store";
+import { store } from "@/store";
 export default {
   name: "BtnRemoveFlowyNode",
   props: {
@@ -25,10 +25,7 @@ export default {
 
 <style lang="scss" scoped>
 .btn-remove {
-  position: absolute;
-  bottom: 45px;
-  right: 15px;
-  background: #bd4028;
+  background: $clr-danger;
   color: #fff;
   font-weight: 700;
   width: 30px;

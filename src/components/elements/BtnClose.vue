@@ -16,7 +16,7 @@ export default {
 
 <style lang="scss" scoped>
 .btn-close-modal {
-  background: #bd4028;
+  background: $clr-danger;
   color: #fff;
   font-weight: 700;
   width: 30px;

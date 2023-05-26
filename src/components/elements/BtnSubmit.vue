@@ -23,11 +23,10 @@ export default {
 
 <style lang="scss" scoped>
 .btn-submit {
-  background: #061f8f;
+  background: $clr-orange;
   margin: 20px auto;
   color: #fff;
-  font-weight: 700;
-  font-size: 1rem;
+  font-size: $fs-mid-reg;
   padding: 4.5px 8px;
   border-radius: 5px;
   transition: all 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86);

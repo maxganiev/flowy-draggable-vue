@@ -7,7 +7,8 @@ export class User {
     /**@type {String | null}*/ avatar_thumb,
     /**@type {String}*/ position_name,
     /**@type {String | null}*/ descr,
-    /**@type {Number} @desc {кол-во px, на которые необходимо сместить текущий нод по У, начиная от 0 (x100)} */ top
+    /**@type {Number} @desc {кол-во px, на которые необходимо сместить текущий нод по У, начиная от 0 } */ top,
+    /**@type {string[]} */ tags
   ) {
     this.parentId = parentId;
     this.id = id;
@@ -20,6 +21,7 @@ export class User {
       profileUrl: `#/profile/${this.id}`,
     };
     this.top = top;
+    this.tags = tags;
   }
 
   get nodeComponent() {
@@ -28,5 +30,13 @@ export class User {
 
   get type() {
     return "user";
+  }
+
+  toJSON() {
+    return {
+      nodeComponent: this.nodeComponent,
+      type: this.type,
+      ...this,
+    };
   }
 }

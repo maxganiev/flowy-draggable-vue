@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import Mirror from "./Mirror.vue";
+import Mirror from "./flowy_components/Mirror.vue";
 import Vue from "vue";
 /* eslint-disable no-unused-vars */
 
@@ -101,7 +101,8 @@ export default {
       if (
         e.target.getAttribute("data-node") === "flowy" ||
         e.target.getAttribute("data-tree") === "flowy-tree" ||
-        e.target.id === "flowy"
+        e.target.id === "flowy" ||
+        e.target.id === "flowy-tree"
       )
         this.dragShema(e);
       if (e.target.parentElement.className === "flowy-drag-handle") this.createFlowyNodeMirror(e);
@@ -122,18 +123,13 @@ export default {
       if (!this.schemaClicked) return;
 
       const rect = this.$refs.elem.getBoundingClientRect();
-
-      //x limits
-      // if (rect.left >= 0 && (rect.left / document.body.clientWidth) * 100 >= 90)
-      //   this.transBaseX -= 40;
-      // if (rect.left < 0 && rect.right <= 240) this.transBaseX += 40;
-
+      const dragStep = 15;
       //x
-      if (this.left > e.clientX) this.transBaseX -= 10;
-      if (this.left < e.clientX) this.transBaseX += 10;
+      if (this.left > e.clientX) this.transBaseX -= dragStep;
+      if (this.left < e.clientX) this.transBaseX += dragStep;
       //y
-      if (this.top > e.clientY) this.transBaseY -= 10;
-      if (this.top < e.clientY) this.transBaseY += 10;
+      if (this.top > e.clientY) this.transBaseY -= dragStep;
+      if (this.top < e.clientY) this.transBaseY += dragStep;
 
       const scaleFactor = (rect.width / this.$refs.elem.offsetWidth).toFixed(2);
 
@@ -146,7 +142,8 @@ export default {
       if (
         e.target.getAttribute("data-node") !== "flowy" &&
         e.target.getAttribute("data-tree") !== "flowy-tree" &&
-        e.target.id !== "flowy"
+        e.target.id !== "flowy" &&
+        e.target.id !== "flowy-tree"
       )
         return;
       this.schemaClicked = true;

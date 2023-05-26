@@ -29,20 +29,15 @@
 export default {
   props: {
     descr: {
-      type: String | null,
+      type: String,
       required: true,
     },
   },
-  data() {
-    return {};
-  },
-  mounted() {},
-  destroyed() {},
   methods: {},
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .flowy-drag-handle {
   position: absolute;
   right: 5px;
@@ -61,7 +56,7 @@ export default {
   justify-content: center;
   align-items: center;
   color: #fff;
-  background: #0e8a96;
+  background: $clr-emerald;
   margin: 20px 10px;
   border-radius: 30px;
   font-weight: 700;

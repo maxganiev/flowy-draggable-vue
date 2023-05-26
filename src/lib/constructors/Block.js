@@ -20,4 +20,12 @@ export class Block {
   get type() {
     return "block";
   }
+
+  toJSON() {
+    return {
+      nodeComponent: this.nodeComponent,
+      type: this.type,
+      ...this,
+    };
+  }
 }

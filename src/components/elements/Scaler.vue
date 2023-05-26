@@ -43,7 +43,10 @@ export default {
 
 <style lang="scss" scoped>
 input {
-  z-index: 200;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 150;
   border: 1px #000 solid;
   cursor: grab;
   -webkit-appearance: none;
@@ -51,8 +54,11 @@ input {
   height: 12px;
   background: rgba(255, 255, 255, 0.6);
   border-radius: 5px;
-  background-image: linear-gradient(#061f8f, #061f8f);
+  background-image: linear-gradient($clr-emerald, $clr-emerald);
   background-repeat: no-repeat;
+  opacity: 0.2;
+  transition: opacity 0.2s ease-in;
+  opacity: 0.2;
 
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -60,8 +66,8 @@ input {
     width: 20px;
     border-radius: 50%;
     background: #fff;
-    box-shadow: 0 0 2px 0 #061f8f;
-    border: 0.5px #061f8f solid;
+    box-shadow: 0 0 2px 0 $clr-emerald;
+    border: 0.5px $clr-emerald solid;
     transition: background 0.3s ease-in-out;
   }
 
@@ -70,6 +76,11 @@ input {
     box-shadow: none;
     border: none;
     background: transparent;
+  }
+
+  &:hover {
+    cursor: pointer;
+    opacity: 1;
   }
 }
 </style>
