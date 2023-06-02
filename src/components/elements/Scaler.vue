@@ -1,7 +1,7 @@
 <template>
   <input
     type="range"
-    min="0.42"
+    min="0.48"
     max="0.84"
     step="0.03"
     v-model="zoom"
@@ -15,7 +15,7 @@
 export default {
   name: "Scaler",
   data: () => ({
-    zoom: "0.84",
+    zoom: "0.54",
     elem: null,
   }),
 
@@ -43,7 +43,7 @@ export default {
 
 <style lang="scss" scoped>
 input {
-  position: absolute;
+  position: fixed;
   top: 10px;
   right: 10px;
   z-index: 150;

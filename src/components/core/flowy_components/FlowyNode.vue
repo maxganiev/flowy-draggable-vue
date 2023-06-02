@@ -24,10 +24,10 @@
           v-if="!isTopParent && mounted"
           :styling="{
             ...lineMargins,
-            zoom,
-            transform: `translateY(-${baseTrY + translateY}px) scale(${zoom})`,
+            transform: `translateY(-${baseTrY + top}px) translateX(75px) scale(${zoom})`,
           }"
           :path="linePath"
+          :class="{ isDragged: schemaIsDragged }"
         />
 
         <!-- Vertical line -->
@@ -148,6 +148,10 @@ export default {
       type: Boolean,
     },
 
+    schemaIsDragged: {
+      type: Boolean,
+    },
+
     scale: {
       type: String,
     },
@@ -165,18 +169,12 @@ export default {
       xPosProxy: 0,
       width: 0,
       dropAllowed: true,
-      timer: null,
-      baseTrY: 20,
+      baseTrY: 30,
     };
   },
 
   mounted() {
     this.mounted = true;
-    this.timer = setInterval(this.setWidth, 200);
-  },
-
-  destroyed() {
-    clearInterval(this.timer);
   },
 
   updated() {
@@ -189,11 +187,7 @@ export default {
 
   computed: {
     zoom() {
-      return this.scale == 1 ? "unset" : "1." + (1 - this.scale).toString().split(".")[1];
-    },
-
-    translateY() {
-      return this.zoom !== "unset" ? this.top / this.zoom : "0";
+      return 1 + Number(1 - this.scale);
     },
 
     xPos() {
@@ -220,30 +214,13 @@ export default {
       return 64;
     },
 
-    isOddChildren() {
-      return Math.abs(this.totalChildren % 2) === 1;
-    },
-
-    isMiddle() {
-      return this.isOddChildren && this.index + 1 === Math.ceil(this.totalChildren / 2);
-    },
-
     isLeftSide() {
       // if block as at the left side in the row of nodes
       return this.index + 1 <= Math.ceil(this.totalChildren / 2);
     },
 
-    lineStartX() {
-      return this.blockWidth / 2;
-    },
-
     blockWidth() {
       return this.width;
-    },
-
-    holderWidth() {
-      // includes margin
-      return this.$refs.block.parentElement.offsetWidth;
     },
 
     rowWidth() {
@@ -256,7 +233,6 @@ export default {
 
     children() {
       return this.nodes.filter((item) => item.parentId === this.node.id);
-      //return filter(this.nodes, { parentId: this.node.id });
     },
 
     passedProps() {
@@ -272,20 +248,25 @@ export default {
     },
     */
 
+    withinParent() {
+      return;
+    },
+
     linePath() {
       const height = this.lineTotalHeight / 2;
       const width = this.lengthFromMiddle;
       const modifier = this.isLeftSide ? "" : "-";
-      const topCoeff =
-        this.scale >= 1 ? this.top / this.scale : this.top * this.scale + this.baseTrY;
+      const adaptiveHeight = Number(
+        this.lineTotalHeight +
+          (this.top * this.scale + this.baseTrY) * (this.zoom * 0.905).toFixed(2)
+      );
 
-      return `M${modifier}${width} ${height}L${modifier}${width} ${height}L0 ${height}L0 ${
-        this.lineTotalHeight + topCoeff
-      }`;
+      return `M${modifier}${width} ${height}L${modifier}${width} ${height}L0 ${height}L0 ${adaptiveHeight}`;
     },
 
     lengthFromMiddle() {
-      return Math.abs(this.xPos - this.parentX);
+      //return Math.abs(this.xPos - this.parentX);
+      return Math.abs(this.xPos - this.parentX) * this.zoom * 0.905;
     },
   },
 

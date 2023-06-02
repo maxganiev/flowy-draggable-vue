@@ -7,7 +7,6 @@
     }"
     @mousedown="onMouseDown"
     @mouseup="onMouseUp"
-    @mouseleave="onMouseUp"
     @mousemove="onMouseMove"
   >
     <div
@@ -18,7 +17,6 @@
       ref="elem"
       @mousedown="onMouseDown"
       @mouseup="onMouseUp"
-      @mouseleave="onMouseUp"
       @mousemove="onMouseMove"
     >
       <FlowyNode
@@ -34,6 +32,7 @@
         :before-move="onBeforeMove"
         :before-add="onBeforeAdd"
         :is-dragging="dragging"
+        :schema-is-dragged="schemaClicked"
       >
       </FlowyNode>
     </div>
@@ -76,10 +75,16 @@ export default {
       top: 0,
       transBaseX: 0,
       transBaseY: 0,
+      deltaX: 0,
+      deltaY: 0,
 
       MirrorConstructor: Vue.extend(Mirror),
       flowyNodeMirror: null,
     };
+  },
+
+  mounted() {
+    this.translateIntoView();
   },
 
   computed: {
@@ -97,6 +102,15 @@ export default {
   },
 
   methods: {
+    translateIntoView() {
+      const firstFlowyNodeRect = document
+        .querySelector('[data-node="flowy"]')
+        .getBoundingClientRect();
+
+      this.transBaseX = -firstFlowyNodeRect.width / 2.5;
+      this.transBaseY = -firstFlowyNodeRect.top * 0.9;
+    },
+
     onMouseDown(e) {
       if (
         e.target.getAttribute("data-node") === "flowy" ||
@@ -123,13 +137,19 @@ export default {
       if (!this.schemaClicked) return;
 
       const rect = this.$refs.elem.getBoundingClientRect();
-      const dragStep = 15;
+      const dragStep = 30;
       //x
-      if (this.left > e.clientX) this.transBaseX -= dragStep;
-      if (this.left < e.clientX) this.transBaseX += dragStep;
+      this.deltaX = Math.abs(this.left - e.clientX);
+      if (this.deltaX > 2.6) {
+        if (this.left > e.clientX) this.transBaseX -= dragStep;
+        if (this.left < e.clientX) this.transBaseX += dragStep;
+      }
       //y
-      if (this.top > e.clientY) this.transBaseY -= dragStep;
-      if (this.top < e.clientY) this.transBaseY += dragStep;
+      this.deltaY = Math.abs(this.top - e.clientY);
+      if (this.deltaY > 2.6) {
+        if (this.top > e.clientY) this.transBaseY -= dragStep;
+        if (this.top < e.clientY) this.transBaseY += dragStep;
+      }
 
       const scaleFactor = (rect.width / this.$refs.elem.offsetWidth).toFixed(2);
 
@@ -302,6 +322,7 @@ export default {
 
 #flowy-tree {
   @extend .flex, .flex-row, .flex-no-wrap, .relative;
+  // transition: transform 0.1s ease-out;
 }
 
 .flex .overflow-auto {

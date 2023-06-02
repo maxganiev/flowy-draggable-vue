@@ -31,7 +31,7 @@ export default {
 <style lang="scss" scoped>
 .alert {
   z-index: 200;
-  position: absolute;
+  position: fixed;
   padding: 10px 20px;
   color: #fff;
   width: 100%;

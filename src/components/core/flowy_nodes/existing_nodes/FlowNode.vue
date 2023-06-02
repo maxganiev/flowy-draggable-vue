@@ -183,7 +183,7 @@ export default {
 
       if (node.top - 10 < 0) return;
       node.top -= 10;
-      node.parentId !== -1 && !this.nodeIsTranslating && this.hideLineOnTranslate();
+      node.parentId !== -1 && this.nodeIsTranslating && this.hideLineOnTranslate();
 
       setTimeout(() => {
         this.nodeUp(node);
@@ -193,7 +193,7 @@ export default {
     nodeDown(node) {
       if (!this.nodeIsTranslating) return;
       node.top += 10;
-      node.parentId !== -1 && !this.nodeIsTranslating && this.hideLineOnTranslate();
+      node.parentId !== -1 && this.nodeIsTranslating && this.hideLineOnTranslate();
 
       setTimeout(() => {
         this.nodeDown(node);

@@ -28,4 +28,7 @@ export default defineConfig({
       modules: fileURLToPath(new URL("./src/components/modules", import.meta.url)),
     },
   },
+  server: {
+    port: 5163,
+  },
 });
