@@ -126,7 +126,9 @@ export default {
         e.target.getAttribute("data-node") === "flowy" ||
         e.target.getAttribute("data-tree") === "flowy-tree" ||
         e.target.id === "flowy" ||
-        e.target.id === "flowy-tree"
+        e.target.id === "flowy-tree" ||
+        e.target.id === "grid-schema" ||
+        e.target.classList.contains("grid-cell")
       )
         this.dragShema(e);
       if (e.target.parentElement.className === "flowy-drag-handle") this.createFlowyNodeMirror(e);
@@ -173,7 +175,9 @@ export default {
         e.target.getAttribute("data-node") !== "flowy" &&
         e.target.getAttribute("data-tree") !== "flowy-tree" &&
         e.target.id !== "flowy" &&
-        e.target.id !== "flowy-tree"
+        e.target.id !== "flowy-tree" &&
+        e.target.id !== "grid-schema" &&
+        !e.target.classList.contains("grid-cell")
       )
         return;
       this.schemaClicked = true;

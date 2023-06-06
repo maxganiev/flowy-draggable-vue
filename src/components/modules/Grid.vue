@@ -1,5 +1,5 @@
 <template>
-  <div class="grid" ref="gridWrapper" v-on="{ ...$listeners }">
+  <div class="grid" ref="gridWrapper" v-on="{ ...$listeners }" id="grid-schema">
     <div class="grid-content" ref="gridContent"></div>
   </div>
 </template>
@@ -48,6 +48,7 @@ class Column extends Cell {
     this.elem.style.width = "320px";
     this.elem.style.height = "100%";
     this.elem.style.border = "0.5px #bd4028 solid";
+    this.elem.classList.add("grid-cell");
   }
 }
 
@@ -59,6 +60,7 @@ export default {
     numberOfColumns: 0,
     numberOfRows: 0,
     rows: [],
+    isResizing: false,
   }),
 
   mounted() {
@@ -124,7 +126,20 @@ export default {
       this.addColumns();
     },
 
-    hadleScreenResize() {
+    /**@desc Перерисовываем сетку только тогда, когда ресайз окончен */
+    async hadleScreenResize() {
+      const currWindowHeight = window.innerHeight;
+      const currWindowWidth = window.innerWidth;
+
+      this.isResizing = await new Promise((resolve) =>
+        setTimeout(() => {
+          resolve(
+            !(currWindowWidth === window.innerWidth && currWindowHeight === window.innerHeight)
+          );
+        }, 100)
+      );
+
+      if (this.isResizing) return;
       this.clearCells();
       this.calcGrid();
       this.drawGrid();
@@ -144,11 +159,6 @@ export default {
   .grid-content {
     width: max-content;
     height: max-content;
-    .grid-comp-row {
-      width: 320px;
-      height: 200px;
-      background-color: aqua;
-    }
   }
 }
 </style>
