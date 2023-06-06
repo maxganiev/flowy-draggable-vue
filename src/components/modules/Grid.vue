@@ -67,16 +67,13 @@ export default {
   mounted() {
     this.gridWrapper.ref = this.$refs.gridWrapper;
     this.gridContent.ref = this.$refs.gridContent;
-    this.clearCells();
+    this.gridInit();
 
-    this.calcGrid();
-    this.drawGrid();
-
-    window.addEventListener("resize", this.hadleScreenResize);
+    window.addEventListener("resize", this.gridInit);
   },
 
   beforeDestroy() {
-    window.removeEventListener("resize", this.hadleScreenResize);
+    window.removeEventListener("resize", this.gridInit);
   },
 
   methods: {
@@ -128,7 +125,7 @@ export default {
     },
 
     /**@desc Перерисовываем сетку только тогда, когда ресайз окончен */
-    async hadleScreenResize() {
+    async gridInit() {
       const currWindowHeight = window.innerHeight;
       const currWindowWidth = window.innerWidth;
 

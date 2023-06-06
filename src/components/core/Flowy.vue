@@ -88,6 +88,7 @@ export default {
 
       MirrorConstructor: Vue.extend(Mirror),
       flowyNodeMirror: null,
+      int: null,
     };
   },
 
@@ -131,7 +132,8 @@ export default {
         e.target.classList.contains("grid-cell")
       )
         this.dragShema(e);
-      if (e.target.parentElement.className === "flowy-drag-handle") this.createFlowyNodeMirror(e);
+      if (e.target.parentElement.className === "flowy-drag-handle" && !this.flowyNodeMirror)
+        this.createFlowyNodeMirror(e);
     },
 
     onMouseUp(e) {
@@ -142,6 +144,8 @@ export default {
         document.getElementById("flowy-node-mirror").remove();
         document.body.removeEventListener("mousemove", this.dragFlowyNodeMirror);
         document.getElementById("flowy").style.cursor = "grab";
+
+        clearInterval(this.int);
       }
     },
 
@@ -187,6 +191,8 @@ export default {
       if (e.target.parentElement.className !== "flowy-drag-handle") return;
 
       const ref = this.$refs.elem;
+      document.getElementById("flowy").style.cursor = "crosshair";
+
       this.flowyNodeMirror = new this.MirrorConstructor({
         propsData: {
           top: e.pageY,
@@ -198,7 +204,10 @@ export default {
       this.flowyNodeMirror.$mount();
       document.body.appendChild(this.flowyNodeMirror.$el);
       document.body.addEventListener("mousemove", this.dragFlowyNodeMirror);
-      document.getElementById("flowy").style.cursor = "crosshair";
+
+      this.int = setInterval(() => {
+        this.scrollPageWhileDraggingMirror(this.flowyNodeMirror.$el.getBoundingClientRect());
+      }, 100);
     },
 
     dragFlowyNodeMirror(e) {
@@ -207,6 +216,18 @@ export default {
 
       el.style.top = e.pageY + "px";
       el.style.left = e.clientX - rect.width + "px";
+    },
+
+    scrollPageWhileDraggingMirror(rect) {
+      //X
+      const mirrorScrolledPageByX = rect.x / document.body.clientWidth;
+      if (mirrorScrolledPageByX >= 0.9) this.transBaseX -= 40;
+      else if (mirrorScrolledPageByX <= 0.1) this.transBaseX += 40;
+
+      //Y
+      const mirrorScrolledPageByY = rect.y / document.body.clientHeight;
+      if (mirrorScrolledPageByY >= 0.9) this.transBaseY -= 40;
+      else if (mirrorScrolledPageByY <= 0.1) this.transBaseY += 40;
     },
 
     setNotDragging() {
@@ -230,6 +251,9 @@ export default {
     onDragStart(event) {
       this.draggingNode = event.node;
       this.$emit("drag-start", event);
+
+      // const draggedElemRect = event.draggedElem.getBoundingClientRect();
+      // console.log(draggedElemRect.x / document.body.clientWidth);
     },
 
     onDragStop(event) {

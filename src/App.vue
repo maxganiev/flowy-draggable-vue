@@ -66,7 +66,6 @@ import Aside from "./components/modules/Aside.vue";
 import BtnSubmit from "elements/BtnSubmit.vue";
 import Alert from "modules/Alert.vue";
 import CheckSwitch from "elements/CheckSwitch.vue";
-import Grid from "modules/Grid.vue";
 
 export default {
   name: "app",
@@ -105,7 +104,6 @@ export default {
     BtnSubmit,
     Alert,
     CheckSwitch,
-    Grid,
   },
 
   computed: {
@@ -410,7 +408,8 @@ button {
 }
 
 .user-block.draggable-item.draggable-mirror,
-.flowy-block.draggable-mirror {
+.flowy-block.draggable-mirror,
+.flow-block-tab.draggable-mirror {
   //opacity: 1;
   display: none;
 }

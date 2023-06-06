@@ -54,6 +54,7 @@ export default {
     newDraggingBlock: null,
     MirrorConstructor: Vue.extend(Mirror),
     flowyNodeMirror: null,
+    int: null,
   }),
 
   props: {
@@ -83,7 +84,10 @@ export default {
     },
 
     onMousedown(e) {
-      if (e.target.parentElement.parentElement.className === "flowy-drag-handle")
+      if (
+        e.target.parentElement.parentElement.className === "flowy-drag-handle" &&
+        !this.flowyNodeMirror
+      )
         this.createFlowyNodeMirror(e);
     },
 
@@ -99,7 +103,7 @@ export default {
         propsData: {
           top: e.pageY,
           left: e.clientX - closestEl.getBoundingClientRect().width,
-          transform: `scale(${this.schemaScale})`,
+          transform: `scale(${document.getElementById("scaler").value})`,
           content: closestEl.innerHTML,
         },
       });
@@ -107,6 +111,32 @@ export default {
       document.body.appendChild(this.flowyNodeMirror.$el);
       document.body.addEventListener("mousemove", this.dragFlowyNodeMirror);
       document.getElementById("flowy").style.cursor = "crosshair";
+
+      this.int = setInterval(() => {
+        this.scrollPageWhileDraggingMirror(
+          this.flowyNodeMirror.$el.getBoundingClientRect()
+        ).start();
+      }, 100);
+    },
+
+    scrollPageWhileDraggingMirror(rect) {
+      let x = 0;
+      let y = 0;
+      const flowy = document.getElementById("flowy");
+
+      return {
+        start() {
+          //X
+          const mirrorScrolledPageByX = rect.x / document.body.clientWidth;
+          if (mirrorScrolledPageByX >= 0.8)
+            flowy.scrollBy({ left: (x += 40), top: 0, behavior: "smooth" });
+
+          //Y
+          // const mirrorScrolledPageByY = rect.y / document.body.clientHeight;
+          // if (mirrorScrolledPageByY >= 0.9) y -= 40;
+          // else if (mirrorScrolledPageByY <= 0.1) y += 40;
+        },
+      };
     },
 
     dragFlowyNodeMirror(e) {
@@ -125,11 +155,11 @@ export default {
       console.log("onDragStopNewBlock", event);
       this.newDraggingBlock = null;
 
-      if (document.getElementById("flowy-node-mirror")) {
-        this.flowyNodeMirror = null;
-        document.getElementById("flowy-node-mirror").remove();
+      if (this.flowyNodeMirror) {
         document.body.removeEventListener("mousemove", this.dragFlowyNodeMirror);
+        this.flowyNodeMirror = null;
         document.getElementById("flowy").style.cursor = "grab";
+        clearInterval(this.int);
       }
     },
   },
