@@ -5,9 +5,27 @@
   >
     <Spinner :loading="store.loading" />
     <Scaler @rangeChange="updateScale" />
-    <div class="submit-changes" v-if="store.shemaIsUpdated && showSchemaUpdateWarning">
-      <BtnSubmit @onSubmit="updateSchema" content="Сохранить изменения" />
-      <a class="close-submit" href="#" @click.prevent="store.toggleShemaStatus(false)">&#10754;</a>
+    <div class="panel-bottom">
+      <CheckSwitch
+        :labelContent="'Показать сетку'"
+        :styling="{
+          holder: {
+            backgroundColor: '#fe6b0c',
+            color: '#fff',
+            display: 'flex',
+            'align-items': 'center',
+            'justify-content': 'space-evenly',
+          },
+          label: { fontSize: '0.8rem' },
+        }"
+        @onChange="showGrid = !showGrid"
+      />
+      <div class="submit-changes" v-if="store.shemaIsUpdated && showSchemaUpdateWarning">
+        <BtnSubmit @onSubmit="updateSchema" content="Сохранить изменения" />
+        <a class="close-submit" href="#" @click.prevent="store.toggleShemaStatus(false)"
+          >&#10754;</a
+        >
+      </div>
     </div>
     <Alert :alert-type="alert.type" :show="alert.show" :HTMLContent="alert.HTMLContent" />
     <Aside v-if="renderUsersTab" :users="store.users" />
@@ -18,6 +36,7 @@
           class="h-full w-full p-6"
           :nodes="store.nodes"
           :scale="schemaScale"
+          :showGrid="showGrid"
           @drag-start="onDragStart"
           @add="add"
           @move="move"
@@ -46,6 +65,8 @@ import UserEditForm from "./components/modules/UserEditForm.vue";
 import Aside from "./components/modules/Aside.vue";
 import BtnSubmit from "elements/BtnSubmit.vue";
 import Alert from "modules/Alert.vue";
+import CheckSwitch from "elements/CheckSwitch.vue";
+import Grid from "modules/Grid.vue";
 
 export default {
   name: "app",
@@ -72,6 +93,7 @@ export default {
         }, 3000);
       },
     },
+    showGrid: false,
   }),
 
   components: {
@@ -82,6 +104,8 @@ export default {
     Aside,
     BtnSubmit,
     Alert,
+    CheckSwitch,
+    Grid,
   },
 
   computed: {
@@ -301,30 +325,49 @@ a {
   min-height: 700px;
 }
 
-.submit-changes {
-  display: flex;
-  justify-content: space-evenly;
-  background-color: $clr-orange;
+.panel-bottom {
   position: fixed;
   z-index: 200;
   bottom: 0;
   left: 0;
+  min-height: 40px;
   width: 100%;
+  display: grid;
+  grid-template-columns: 15% 85%;
 
-  button {
-    background-color: transparent !important;
-    margin: unset !important;
-    width: 95%;
-    border-radius: unset !important;
+  &::after {
+    content: "";
+    background-color: rgba(255, 255, 255, 0.9);
+    position: absolute;
+    top: 0;
+    left: 15%;
+    width: 85%;
+    height: 100%;
+    z-index: -1;
+    filter: blur(2px);
   }
 
-  .close-submit {
-    width: 5%;
-    color: #fff;
-    transition: transform 0.2s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+  .submit-changes {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    background-color: $clr-orange;
 
-    &:hover {
-      transform: scale(1.05);
+    button {
+      background-color: transparent !important;
+      margin: unset !important;
+      width: 95%;
+      border-radius: unset !important;
+    }
+
+    .close-submit {
+      width: 5%;
+      color: #fff;
+      transition: transform 0.2s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+
+      &:hover {
+        transform: scale(1.05);
+      }
     }
   }
 }

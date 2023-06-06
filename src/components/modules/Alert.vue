@@ -21,7 +21,7 @@ export default {
       type: String,
       required: true,
       validator(value) {
-        return ["success", "warning", "danger"].includes(value);
+        return ["success", "warning", "danger", "default"].includes(value);
       },
     },
   },
@@ -59,5 +59,9 @@ export default {
 
 .danger {
   background-color: $clr-danger;
+}
+
+.default {
+  background-color: transparent;
 }
 </style>

@@ -15,7 +15,9 @@
           </li>
           <li>
             <img
-              :src="'https://portal.elcomspb.ru/' + editableNode.data.avatar_thumb"
+              :src="`${
+                !tempImg ? 'https://portal.elcomspb.ru/' + editableNode.data.avatar_thumb : tempImg
+              }`"
               alt="employee pic"
             />
             <input
@@ -24,6 +26,7 @@
               name="avatar"
               style="display: none"
               ref="avatarUpload"
+              @change="replaceCurrentAvatar"
             />
             <button class="btn" style="width: 100%" @click="selectAvatar">
               Загрузить другое фото
@@ -113,7 +116,7 @@ export default {
     syncWithDb: false,
     tagInputFocused: false,
     alert: {
-      type: "success",
+      type: "default",
       show: false,
       HTMLContent: "",
 
@@ -127,6 +130,7 @@ export default {
         }, 3000);
       },
     },
+    tempImg: null,
   }),
 
   computed: {
@@ -140,6 +144,8 @@ export default {
   },
 
   mounted() {
+    this.tempImg = null;
+
     //убираем разметку из описания редактируемого нода:
     this.editableNode.data.descr = stripHtml(this.editableNode.data.descr);
 
@@ -175,6 +181,32 @@ export default {
 
     selectAvatar() {
       this.$refs.avatarUpload.click();
+    },
+
+    async replaceCurrentAvatar(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const fileExtension = file.name.split(".").slice(-1)[0].trim().toLowerCase();
+
+      if (!["jpg", "jpeg", "png", "tiff"].includes(fileExtension)) {
+        this.alert.setAlert("danger", true, "Выбран неподдерживаемый формат изображения!");
+        return;
+      }
+
+      if (file.size > 50e6) {
+        this.alert.setAlert("danger", true, "Макс. размер файла - 5 Мб!");
+        return;
+      }
+
+      this.tempImg = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          this.editableNode.data.avatar_thumb = e.target.value.split("\\").slice(-1)[0];
+          return resolve(reader.result);
+        };
+      });
     },
 
     addTag() {

@@ -1,9 +1,9 @@
 <template>
   <input
     type="range"
-    min="0.48"
-    max="0.84"
-    step="0.03"
+    min="0.22"
+    max="0.66"
+    step="0.22"
     v-model="zoom"
     v-on:input="(e) => handleChange(e)"
     id="scaler"
@@ -15,7 +15,7 @@
 export default {
   name: "Scaler",
   data: () => ({
-    zoom: "0.54",
+    zoom: "0.44",
     elem: null,
   }),
 

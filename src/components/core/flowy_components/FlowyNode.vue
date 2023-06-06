@@ -252,13 +252,20 @@ export default {
       return;
     },
 
+    /**@desc Поправки к расчетам высоты и ширины svg линий для 3х шагов зумера */
+    scaleKoeff() {
+      if (this.scale == 0.22) return 1.4;
+      if (this.scale == 0.44) return 0.95;
+      return 0.85;
+    },
+
     linePath() {
       const height = this.lineTotalHeight / 2;
       const width = this.lengthFromMiddle;
       const modifier = this.isLeftSide ? "" : "-";
       const adaptiveHeight = Number(
         this.lineTotalHeight +
-          (this.top * this.scale + this.baseTrY) * (this.zoom * 0.905).toFixed(2)
+          (this.top * this.scale + this.baseTrY) * (this.zoom * this.scaleKoeff).toFixed(2)
       );
 
       return `M${modifier}${width} ${height}L${modifier}${width} ${height}L0 ${height}L0 ${adaptiveHeight}`;
@@ -266,7 +273,7 @@ export default {
 
     lengthFromMiddle() {
       //return Math.abs(this.xPos - this.parentX);
-      return Math.abs(this.xPos - this.parentX) * this.zoom * 0.905;
+      return Math.abs(this.xPos - this.parentX) * this.zoom * this.scaleKoeff;
     },
   },
 

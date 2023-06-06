@@ -9,6 +9,8 @@
     @mouseup="onMouseUp"
     @mousemove="onMouseMove"
   >
+    <Grid @mousedown="onMouseDown" @mouseup="onMouseUp" @mousemove="onMouseMove" v-if="showGrid" />
+
     <div
       id="flowy-tree"
       :style="{
@@ -42,6 +44,7 @@
 <script>
 import Mirror from "./flowy_components/Mirror.vue";
 import Vue from "vue";
+import Grid from "modules/Grid.vue";
 /* eslint-disable no-unused-vars */
 
 export default {
@@ -64,6 +67,11 @@ export default {
     scale: {
       type: String,
     },
+
+    showGrid: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   data() {
@@ -82,6 +90,8 @@ export default {
       flowyNodeMirror: null,
     };
   },
+
+  components: { Grid },
 
   mounted() {
     this.translateIntoView();

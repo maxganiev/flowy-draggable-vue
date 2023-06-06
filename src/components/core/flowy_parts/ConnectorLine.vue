@@ -12,7 +12,7 @@
       xmlns="http://www.w3.org/2000/svg"
     >
       <!-- line -->
-      <path :d="path" stroke="#C5CCD0" stroke-width="2px" ref="svgLine" />
+      <path :d="path" stroke="#00606f" stroke-width="2px" ref="svgLine" />
       <!-- arrow -->
       <path v-if="showArrow" />
     </svg>
