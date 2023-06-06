@@ -47,7 +47,8 @@ class Column extends Cell {
     super(parentElem);
     this.elem.style.width = "320px";
     this.elem.style.height = "100%";
-    this.elem.style.border = "0.5px #bd4028 solid";
+    this.elem.style.border = "0.5px #fe6b0c solid";
+    this.elem.style.opacity = 0.1;
     this.elem.classList.add("grid-cell");
   }
 }
