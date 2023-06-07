@@ -214,14 +214,16 @@ export default {
       const el = this.flowyNodeMirror.$el;
       const rect = el.getBoundingClientRect();
 
-      el.style.top = e.pageY + "px";
-      el.style.left = e.clientX - rect.width + "px";
+      el.style.top = Number(this.scale) < 0.44 ? e.pageY * 0.9 + "px" : e.pageY + "px";
+      el.style.left = Number(this.scale < 0.44)
+        ? (e.clientX - rect.width) * 0.9 + "px"
+        : e.clientX - rect.width + "px";
     },
 
     scrollPageWhileDraggingMirror(rect) {
       //X
       const mirrorScrolledPageByX = rect.x / document.body.clientWidth;
-      if (mirrorScrolledPageByX >= 0.9) this.transBaseX -= 40;
+      if (mirrorScrolledPageByX >= 0.8) this.transBaseX -= 40;
       else if (mirrorScrolledPageByX <= 0.1) this.transBaseX += 40;
 
       //Y

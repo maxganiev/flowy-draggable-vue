@@ -143,8 +143,13 @@ export default {
       const el = this.flowyNodeMirror.$el;
       const rect = el.getBoundingClientRect();
 
-      el.style.top = e.pageY + "px";
-      el.style.left = e.clientX - rect.width + "px";
+      el.style.top =
+        Number(document.getElementById("scaler").value) < 0.44
+          ? (e.pageY - rect.height) / 1.22 + "px"
+          : e.pageY + "px";
+      el.style.left = Number(document.getElementById("scaler").value < 0.44)
+        ? (e.clientX - rect.width) / 1.02 + "px"
+        : e.clientX - rect.width + "px";
     },
 
     onDragStartNewBlock(event) {
@@ -156,6 +161,9 @@ export default {
       this.newDraggingBlock = null;
 
       if (this.flowyNodeMirror) {
+        if (document.getElementById("flowy-node-mirror"))
+          document.getElementById("flowy-node-mirror").remove();
+
         document.body.removeEventListener("mousemove", this.dragFlowyNodeMirror);
         this.flowyNodeMirror = null;
         document.getElementById("flowy").style.cursor = "grab";

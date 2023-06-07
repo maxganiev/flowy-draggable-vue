@@ -1,7 +1,6 @@
 <template>
   <div class="flowy-block mr-24px relative">
     <draggable
-      ref="bb"
       :with-handle="false"
       group="flowy"
       @start="onStart(nodeData)"
@@ -43,7 +42,6 @@ export default {
   methods: {
     onStart(data) {
       this.$emit("drag-start", data);
-      console.log(this.$refs.bb);
     },
     onStop(data) {
       this.$emit("drag-stop", data);

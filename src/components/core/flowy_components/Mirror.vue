@@ -1,13 +1,5 @@
 <template>
-  <div
-    id="flowy-node-mirror"
-    class="mirror-wrapper"
-    v-html="content"
-    :style="style"
-    :top="top"
-    :left="left"
-    :transform="transform"
-  ></div>
+  <div id="flowy-node-mirror" class="mirror-wrapper" v-html="content" :style="style"></div>
 </template>
 
 <script>
@@ -37,7 +29,7 @@ export default {
 
   computed: {
     style() {
-      return `top: ${this.top}px; left: ${this.left}px; transform: ${this.transform}`;
+      return `top: ${this.top}px; left: ${this.left}px; transform: ${this.transform}; transform-orign: top right;`;
     },
   },
 };

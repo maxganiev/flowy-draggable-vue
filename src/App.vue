@@ -7,7 +7,7 @@
     <Scaler @rangeChange="updateScale" />
     <div class="panel-bottom">
       <CheckSwitch
-        :labelContent="'Показать сетку'"
+        :labelContent="`${!showGrid ? 'Показать сетку' : 'Скрыть сетку'}`"
         :styling="{
           holder: {
             backgroundColor: '#fe6b0c',

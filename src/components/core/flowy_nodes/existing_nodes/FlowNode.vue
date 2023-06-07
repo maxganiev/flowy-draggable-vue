@@ -14,7 +14,10 @@
       <div class="flex flex-row flex-no-wrap justify-between items-center p-4 upper-block">
         <div class="flex flex-row flex-no-wrap justify-start items-center main-info-wrapper">
           <div class="thumb-wrapper">
-            <img :src="'https://portal.elcomspb.ru/' + avatar_thumb" />
+            <img
+              :src="!avaTemplate ? 'https://portal.elcomspb.ru/' + avatar_thumb : avaTemplate"
+              @error="onImgLoadErr"
+            />
           </div>
 
           <div class="text-wrapper">
@@ -103,6 +106,7 @@ export default {
     contenteditables: [],
     nodeIsTranslating: false,
     showFullPosition: false,
+    avaTemplate: null,
   }),
 
   props: {
@@ -164,12 +168,18 @@ export default {
   },
 
   methods: {
+    onImgLoadErr(e) {
+      this.avaTemplate = "/public/user-regular.svg";
+      e.target.style.width = "80px";
+      e.target.style.margin = "10px 20px";
+    },
+
     onBtnPress(node, e) {
       this.nodeIsTranslating = true;
       const isUp = e.target.getAttribute("data-direction") === "up";
 
-      if (isUp) this.nodeUp(node);
-      else this.nodeDown(node);
+      if (isUp) this.nodeUp(node, Date.now());
+      else this.nodeDown(node, Date.now());
 
       store.toggleShemaStatus(true);
     },
@@ -178,11 +188,15 @@ export default {
       this.nodeIsTranslating = false;
     },
 
-    nodeUp(node) {
+    nodeUp(node, startTime) {
       if (!this.nodeIsTranslating) return;
 
-      if (node.top - 10 < 0) return;
-      node.top -= 10;
+      const currentTime = Date.now();
+      const dTime = currentTime - startTime;
+      const speed = dTime < 1000 ? 10 : 25;
+
+      if (node.top - speed < 0) return;
+      node.top -= speed;
       node.parentId !== -1 && this.nodeIsTranslating && this.hideLineOnTranslate();
 
       setTimeout(() => {
@@ -190,13 +204,18 @@ export default {
       }, 100);
     },
 
-    nodeDown(node) {
+    nodeDown(node, startTime) {
       if (!this.nodeIsTranslating) return;
-      node.top += 10;
+
+      const currentTime = Date.now();
+      const dTime = currentTime - startTime;
+      const speed = dTime < 1000 ? 10 : 25;
+
+      node.top += speed;
       node.parentId !== -1 && this.nodeIsTranslating && this.hideLineOnTranslate();
 
       setTimeout(() => {
-        this.nodeDown(node);
+        this.nodeDown(node, startTime);
       }, 100);
     },
 
@@ -244,6 +263,7 @@ export default {
     font-size: 1.6rem;
     color: #fff;
     font-weight: 700;
+    text-align: center;
   }
 }
 .upper-block {
