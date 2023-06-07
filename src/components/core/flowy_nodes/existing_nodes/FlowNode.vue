@@ -169,7 +169,7 @@ export default {
 
   methods: {
     onImgLoadErr(e) {
-      this.avaTemplate = "/public/user-regular.svg";
+      this.avaTemplate = "/user-regular.svg";
       e.target.style.width = "80px";
       e.target.style.margin = "10px 20px";
     },

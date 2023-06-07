@@ -3,7 +3,14 @@
     <div class="flex flex-row flex-no-wrap ml-2">
       <div class="flex flex-row flex-no-wrap justify-start items-center main-info-wrapper">
         <div class="thumb-wrapper">
-          <img :src="'https://portal.elcomspb.ru/' + currentNode.data.avatar_thumb" />
+          <img
+            :src="
+              !avaTemplate
+                ? 'https://portal.elcomspb.ru/' + currentNode.data.avatar_thumb
+                : avaTemplate
+            "
+            @error="onImgLoadErr"
+          />
         </div>
 
         <div class="text-wrapper">
@@ -45,6 +52,7 @@ import { store } from "@/store";
 export default {
   data: () => ({
     store,
+    avaTemplate: null,
   }),
 
   props: {
@@ -61,6 +69,14 @@ export default {
   },
 
   components: { BtnCreateSeparateNode },
+
+  methods: {
+    onImgLoadErr(e) {
+      this.avaTemplate = "/user-regular.svg";
+      e.target.style.width = "80px";
+      e.target.style.margin = "10px 20px";
+    },
+  },
 };
 </script>
 
