@@ -29,7 +29,7 @@ export default {
 
   computed: {
     style() {
-      return `top: ${this.top}px; left: ${this.left}px; transform: ${this.transform}; transform-orign: top right;`;
+      return `top: ${this.top}px; left: ${this.left}px; transform: ${this.transform}; transform-origin: 0 0;`;
     },
   },
 };

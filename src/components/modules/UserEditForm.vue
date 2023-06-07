@@ -14,10 +14,11 @@
             <textarea class="form-control" v-model="editableNode.data.descr"></textarea>
           </li>
           <li>
-            <img
-              :src="`${
+            <Pic
+              :src="
                 !tempImg ? 'https://portal.elcomspb.ru/' + editableNode.data.avatar_thumb : tempImg
-              }`"
+              "
+              :key="tempImg"
               alt="employee pic"
             />
             <input
@@ -101,6 +102,7 @@ import cloneDeep from "lodash/cloneDeep";
 import CheckSwitch from "elements/CheckSwitch.vue";
 import Alert from "modules/Alert.vue";
 import { stripHtml } from "@/lib/stripHtml";
+import Pic from "elements/Pic.vue";
 
 export default {
   name: "UserEditForm",
@@ -231,7 +233,7 @@ export default {
     },
   },
 
-  components: { BtnClose, CheckSwitch, Alert },
+  components: { BtnClose, CheckSwitch, Alert, Pic },
 };
 </script>
 

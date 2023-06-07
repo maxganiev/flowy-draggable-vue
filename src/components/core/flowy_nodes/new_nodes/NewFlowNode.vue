@@ -3,14 +3,7 @@
     <div class="flex flex-row flex-no-wrap ml-2">
       <div class="flex flex-row flex-no-wrap justify-start items-center main-info-wrapper">
         <div class="thumb-wrapper">
-          <img
-            :src="
-              !avaTemplate
-                ? 'https://portal.elcomspb.ru/' + currentNode.data.avatar_thumb
-                : avaTemplate
-            "
-            @error="onImgLoadErr"
-          />
+          <Pic :src="'https://portal.elcomspb.ru/' + currentNode.data.avatar_thumb" />
         </div>
 
         <div class="text-wrapper">
@@ -48,6 +41,7 @@
 /* eslint-disable no-unused-vars */
 import BtnCreateSeparateNode from "elements/BtnCreateSeparateNode.vue";
 import { store } from "@/store";
+import Pic from "elements/Pic.vue";
 
 export default {
   data: () => ({
@@ -68,15 +62,7 @@ export default {
     },
   },
 
-  components: { BtnCreateSeparateNode },
-
-  methods: {
-    onImgLoadErr(e) {
-      this.avaTemplate = "/user-regular.svg";
-      e.target.style.width = "80px";
-      e.target.style.margin = "10px 20px";
-    },
-  },
+  components: { BtnCreateSeparateNode, Pic },
 };
 </script>
 

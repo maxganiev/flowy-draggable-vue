@@ -68,6 +68,12 @@ export default {
     NewBlockAdder,
   },
 
+  computed: {
+    flowy() {
+      return document.getElementById("flowy");
+    },
+  },
+
   methods: {
     toggleSearch(searchStart) {
       this.searchStart = searchStart;
@@ -101,16 +107,16 @@ export default {
 
       this.flowyNodeMirror = new this.MirrorConstructor({
         propsData: {
-          top: e.pageY,
-          left: e.clientX - closestEl.getBoundingClientRect().width,
+          top: e.offsetY,
+          left: e.offsetX,
           transform: `scale(${document.getElementById("scaler").value})`,
           content: closestEl.innerHTML,
         },
       });
       this.flowyNodeMirror.$mount();
-      document.body.appendChild(this.flowyNodeMirror.$el);
-      document.body.addEventListener("mousemove", this.dragFlowyNodeMirror);
-      document.getElementById("flowy").style.cursor = "crosshair";
+      this.flowy.appendChild(this.flowyNodeMirror.$el);
+      this.flowy.addEventListener("mousemove", this.dragFlowyNodeMirror);
+      this.flowy.style.cursor = "crosshair";
 
       this.int = setInterval(() => {
         this.scrollPageWhileDraggingMirror(
@@ -122,7 +128,7 @@ export default {
     scrollPageWhileDraggingMirror(rect) {
       let x = 0;
       let y = 0;
-      const flowy = document.getElementById("flowy");
+      const flowy = this.flowy;
 
       return {
         start() {
@@ -140,16 +146,17 @@ export default {
     },
 
     dragFlowyNodeMirror(e) {
-      const el = this.flowyNodeMirror.$el;
-      const rect = el.getBoundingClientRect();
+      let x, y;
+      if (e.target.id === "flowy" && e.target.id === "flowy-node-mirror") {
+        x = e.offsetX;
+        y = e.offsetY;
+      } else {
+        x = e.clientX;
+        y = e.clientY * 1.1;
+      }
 
-      el.style.top =
-        Number(document.getElementById("scaler").value) < 0.44
-          ? (e.pageY - rect.height) / 1.22 + "px"
-          : e.pageY + "px";
-      el.style.left = Number(document.getElementById("scaler").value < 0.44)
-        ? (e.clientX - rect.width) / 1.02 + "px"
-        : e.clientX - rect.width + "px";
+      this.flowyNodeMirror._props.top = y;
+      this.flowyNodeMirror._props.left = x;
     },
 
     onDragStartNewBlock(event) {
@@ -164,9 +171,9 @@ export default {
         if (document.getElementById("flowy-node-mirror"))
           document.getElementById("flowy-node-mirror").remove();
 
-        document.body.removeEventListener("mousemove", this.dragFlowyNodeMirror);
+        this.flowy.removeEventListener("mousemove", this.dragFlowyNodeMirror);
         this.flowyNodeMirror = null;
-        document.getElementById("flowy").style.cursor = "grab";
+        this.flowy.style.cursor = "grab";
         clearInterval(this.int);
       }
     },

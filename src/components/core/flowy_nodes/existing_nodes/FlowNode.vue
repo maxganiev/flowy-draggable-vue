@@ -14,10 +14,7 @@
       <div class="flex flex-row flex-no-wrap justify-between items-center p-4 upper-block">
         <div class="flex flex-row flex-no-wrap justify-start items-center main-info-wrapper">
           <div class="thumb-wrapper">
-            <img
-              :src="!avaTemplate ? 'https://portal.elcomspb.ru/' + avatar_thumb : avaTemplate"
-              @error="onImgLoadErr"
-            />
+            <Pic :src="'https://portal.elcomspb.ru/' + avatar_thumb" />
           </div>
 
           <div class="text-wrapper">
@@ -97,6 +94,7 @@ import { User } from "@/lib/constructors/User";
 import { Block } from "@/lib/constructors/Block";
 import TransformPanel from "modules/TransformPanel.vue";
 import { stripHtml } from "@/lib/stripHtml";
+import Pic from "elements/Pic.vue";
 
 export default {
   data: () => ({
@@ -150,6 +148,7 @@ export default {
     BtnRemoveFlowyNode,
     BtnExpander,
     TransformPanel,
+    Pic,
   },
 
   beforeMount() {
@@ -168,12 +167,6 @@ export default {
   },
 
   methods: {
-    onImgLoadErr(e) {
-      this.avaTemplate = "/user-regular.svg";
-      e.target.style.width = "80px";
-      e.target.style.margin = "10px 20px";
-    },
-
     onBtnPress(node, e) {
       this.nodeIsTranslating = true;
       const isUp = e.target.getAttribute("data-direction") === "up";

@@ -5,9 +5,15 @@
     :class="{
       dragging: dragging,
     }"
+    ref="flowyContainer"
     @mousedown="onMouseDown"
     @mouseup="onMouseUp"
-    @mousemove="onMouseMove"
+    @mousemove="
+      (e) => {
+        if (!this.flowyNodeMirror) onMouseMove(e);
+        else dragFlowyNodeMirror(e);
+      }
+    "
   >
     <Grid @mousedown="onMouseDown" @mouseup="onMouseUp" @mousemove="onMouseMove" v-if="showGrid" />
 
@@ -142,7 +148,6 @@ export default {
       if (document.getElementById("flowy-node-mirror") && e.type !== "mouseleave") {
         this.flowyNodeMirror = null;
         document.getElementById("flowy-node-mirror").remove();
-        document.body.removeEventListener("mousemove", this.dragFlowyNodeMirror);
         document.getElementById("flowy").style.cursor = "grab";
 
         clearInterval(this.int);
@@ -190,20 +195,18 @@ export default {
     createFlowyNodeMirror(e) {
       if (e.target.parentElement.className !== "flowy-drag-handle") return;
 
-      const ref = this.$refs.elem;
       document.getElementById("flowy").style.cursor = "crosshair";
 
       this.flowyNodeMirror = new this.MirrorConstructor({
         propsData: {
-          top: e.pageY,
-          left: e.clientX - e.target.closest(".flowy-node-wrapper").getBoundingClientRect().width,
-          transform: `scale(${(ref.getBoundingClientRect().width / ref.offsetWidth).toFixed(2)})`,
+          top: e.offsetY,
+          left: e.offsetX,
+          transform: `scale(${document.getElementById("scaler").value})`,
           content: e.target.closest(".flowy-node-wrapper").innerHTML,
         },
       });
       this.flowyNodeMirror.$mount();
-      document.body.appendChild(this.flowyNodeMirror.$el);
-      document.body.addEventListener("mousemove", this.dragFlowyNodeMirror);
+      this.$refs.flowyContainer.appendChild(this.flowyNodeMirror.$el);
 
       this.int = setInterval(() => {
         this.scrollPageWhileDraggingMirror(this.flowyNodeMirror.$el.getBoundingClientRect());
@@ -211,23 +214,27 @@ export default {
     },
 
     dragFlowyNodeMirror(e) {
-      const el = this.flowyNodeMirror.$el;
-      const rect = el.getBoundingClientRect();
+      let x, y;
+      if (e.target.id === "flowy" && e.target.id === "flowy-node-mirror") {
+        x = e.offsetX;
+        y = e.offsetY;
+      } else {
+        x = e.clientX;
+        y = e.clientY * 1.1;
+      }
 
-      el.style.top = Number(this.scale) < 0.44 ? e.pageY * 0.9 + "px" : e.pageY + "px";
-      el.style.left = Number(this.scale < 0.44)
-        ? (e.clientX - rect.width) * 0.9 + "px"
-        : e.clientX - rect.width + "px";
+      this.flowyNodeMirror._props.top = y;
+      this.flowyNodeMirror._props.left = x;
     },
 
     scrollPageWhileDraggingMirror(rect) {
       //X
-      const mirrorScrolledPageByX = rect.x / document.body.clientWidth;
+      const mirrorScrolledPageByX = rect.x / this.$refs.flowyContainer.clientWidth;
       if (mirrorScrolledPageByX >= 0.8) this.transBaseX -= 40;
       else if (mirrorScrolledPageByX <= 0.1) this.transBaseX += 40;
 
       //Y
-      const mirrorScrolledPageByY = rect.y / document.body.clientHeight;
+      const mirrorScrolledPageByY = rect.y / this.$refs.flowyContainer.clientHeight;
       if (mirrorScrolledPageByY >= 0.9) this.transBaseY -= 40;
       else if (mirrorScrolledPageByY <= 0.1) this.transBaseY += 40;
     },
@@ -255,7 +262,7 @@ export default {
       this.$emit("drag-start", event);
 
       // const draggedElemRect = event.draggedElem.getBoundingClientRect();
-      // console.log(draggedElemRect.x / document.body.clientWidth);
+      // console.log(draggedElemRect.x / this.$refs.flowyContainer.clientWidth);
     },
 
     onDragStop(event) {
