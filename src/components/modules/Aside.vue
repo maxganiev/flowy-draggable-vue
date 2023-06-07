@@ -151,8 +151,8 @@ export default {
         x = e.offsetX;
         y = e.offsetY;
       } else {
-        x = e.clientX;
-        y = e.clientY * 1.1;
+        x = e.pageX;
+        y = e.pageY;
       }
 
       this.flowyNodeMirror._props.top = y;

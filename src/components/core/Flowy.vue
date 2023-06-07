@@ -219,8 +219,8 @@ export default {
         x = e.offsetX;
         y = e.offsetY;
       } else {
-        x = e.clientX;
-        y = e.clientY * 1.1;
+        x = e.pageX;
+        y = e.pageY;
       }
 
       this.flowyNodeMirror._props.top = y;
@@ -235,7 +235,7 @@ export default {
 
       //Y
       const mirrorScrolledPageByY = rect.y / this.$refs.flowyContainer.clientHeight;
-      if (mirrorScrolledPageByY >= 0.9) this.transBaseY -= 40;
+      if (mirrorScrolledPageByY >= 0.65) this.transBaseY -= 40;
       else if (mirrorScrolledPageByY <= 0.1) this.transBaseY += 40;
     },
 
