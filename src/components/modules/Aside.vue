@@ -54,7 +54,6 @@ export default {
     newDraggingBlock: null,
     MirrorConstructor: Vue.extend(Mirror),
     flowyNodeMirror: null,
-    int: null,
   }),
 
   props: {
@@ -117,32 +116,6 @@ export default {
       this.flowy.appendChild(this.flowyNodeMirror.$el);
       this.flowy.addEventListener("mousemove", this.dragFlowyNodeMirror);
       this.flowy.style.cursor = "crosshair";
-
-      this.int = setInterval(() => {
-        this.scrollPageWhileDraggingMirror(
-          this.flowyNodeMirror.$el.getBoundingClientRect()
-        ).start();
-      }, 100);
-    },
-
-    scrollPageWhileDraggingMirror(rect) {
-      let x = 0;
-      let y = 0;
-      const flowy = this.flowy;
-
-      return {
-        start() {
-          //X
-          const mirrorScrolledPageByX = rect.x / document.body.clientWidth;
-          if (mirrorScrolledPageByX >= 0.8)
-            flowy.scrollBy({ left: (x += 40), top: 0, behavior: "smooth" });
-
-          //Y
-          // const mirrorScrolledPageByY = rect.y / document.body.clientHeight;
-          // if (mirrorScrolledPageByY >= 0.9) y -= 40;
-          // else if (mirrorScrolledPageByY <= 0.1) y += 40;
-        },
-      };
     },
 
     dragFlowyNodeMirror(e) {
@@ -174,7 +147,6 @@ export default {
         this.flowy.removeEventListener("mousemove", this.dragFlowyNodeMirror);
         this.flowyNodeMirror = null;
         this.flowy.style.cursor = "grab";
-        clearInterval(this.int);
       }
     },
   },
