@@ -193,7 +193,7 @@ export default {
       node.parentId !== -1 && this.nodeIsTranslating && this.hideLineOnTranslate();
 
       setTimeout(() => {
-        this.nodeUp(node);
+        this.nodeUp(node, startTime);
       }, 100);
     },
 

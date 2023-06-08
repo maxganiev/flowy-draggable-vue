@@ -6,7 +6,6 @@
       @stop="onStop(node, $event)"
       @start="onStart(node, $event)"
       :with-handle="false"
-      :draggable-mirror="{ xAxis: false, appendTo: 'body' }"
       :data="{ draggingNode: node }"
     >
       <!-- the node itself -->

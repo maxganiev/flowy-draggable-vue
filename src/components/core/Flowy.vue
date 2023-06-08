@@ -199,8 +199,8 @@ export default {
 
       this.flowyNodeMirror = new this.MirrorConstructor({
         propsData: {
-          top: e.offsetY,
-          left: e.offsetX,
+          top: e.pageX,
+          left: e.pageY,
           transform: `scale(${document.getElementById("scaler").value})`,
           content: e.target.closest(".flowy-node-wrapper").innerHTML,
         },

@@ -2,12 +2,7 @@
   <button
     v-if="render"
     class="btn btn-create-separate-node"
-    @click="
-      () => {
-        createSeparateNode();
-        scrollToRecentlyAdded();
-      }
-    "
+    @click="createSeparateNode() && scrollToRecentlyAdded()"
     title="Создать отдельную подчиненность для узла"
   >
     <i class="fa-solid fa-people-roof"></i>
@@ -18,6 +13,7 @@
 import { store } from "@/store";
 import { User } from "@/lib/constructors/User";
 import { Block } from "@/lib/constructors/Block";
+import Flowy from "core/Flowy.vue";
 
 export default {
   name: "BtnCreateSeparateNode",
@@ -70,6 +66,7 @@ export default {
       }
 
       this.$emit("createSeparateNode", this.createSeparateNode);
+      return confirmedNewStructure;
     },
 
     scrollToRecentlyAdded() {
@@ -80,7 +77,7 @@ export default {
         recentlyAddedFlowyElem.firstElementChild.scrollIntoView({
           behavior: "smooth",
           block: "start",
-          inline: "start",
+          inline: "center",
         });
       }, 100);
     },

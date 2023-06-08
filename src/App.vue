@@ -146,10 +146,31 @@ export default {
 
     beforeMove({ to, from }) {
       console.log(to, from);
-      if (from && from.id === "1") {
-        return false;
+
+      if (from) {
+        const moveAllowed = this.moveAllowed(from).pushTree(to);
+        if (from.id === "1" || !moveAllowed) {
+          return false;
+        }
       }
+
       return true;
+    },
+
+    moveAllowed(from) {
+      const parentTree = [];
+
+      return {
+        pushTree(draggedNode) {
+          const parentNode = store.nodes.find((node) => node.id === draggedNode.parentId);
+
+          if (!parentNode) return true;
+          parentTree.push(parentNode.id);
+
+          this.pushTree(parentNode);
+          return parentTree.includes(from.id) ? false : true;
+        },
+      };
     },
 
     addNode(_event) {
