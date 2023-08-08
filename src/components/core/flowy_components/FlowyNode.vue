@@ -23,7 +23,8 @@
           v-if="!isTopParent && mounted"
           :styling="{
             ...lineMargins,
-            transform: `translateY(-${baseTrY + top}px) translateX(75px) scale(${zoom})`,
+            transform: `translateY(-${baseTrY + top}px) translateX(0) scale(${zoom})`,
+            'transform-origin': '0px center',
           }"
           :path="linePath"
           :class="{ isDragged: schemaIsDragged }"
@@ -251,11 +252,44 @@ export default {
       return;
     },
 
-    /**@desc Поправки к расчетам высоты и ширины svg линий для 3х шагов зумера */
+    /**@desc Поправки к расчетам высоты и ширины svg линий для зумера */
     scaleKoeff() {
-      if (this.scale == 0.22) return 1.4;
-      if (this.scale == 0.44) return 0.95;
-      return 0.85;
+      const breakPoints = [
+        { min: 0.22, max: 0.24, maxValue: 1.4, minValue: 0.95 },
+        { min: 0.25, max: 0.28, maxValue: 1.25, minValue: 0.95 },
+        { min: 0.29, max: 0.33, maxValue: 1.15, minValue: 0.85 },
+        { min: 0.34, max: 0.4, maxValue: 1.05, minValue: 0.85 },
+        { min: 0.41, max: 0.51, maxValue: 0.95, minValue: 0.85 },
+        { min: 0.52, max: 0.82, maxValue: 0.88, minValue: 0.7 },
+      ];
+
+      let list = [];
+      const currentBb = breakPoints.find(
+        (bb) => Number(this.scale) >= bb.min && Number(this.scale) <= bb.max
+      );
+      currentBb.range = [];
+
+      const stepsToGo = (currentBb.max - currentBb.min) * 100;
+      const step = (currentBb.maxValue - currentBb.minValue) / stepsToGo;
+      let currVal = currentBb.maxValue - step;
+
+      for (let i = 0; i <= stepsToGo; i++) {
+        if (i === 0) {
+          currVal = currentBb.maxValue;
+          currentBb.range.push(currentBb.min);
+        } else if (i === stepsToGo) {
+          currVal = currentBb.minValue;
+          currentBb.range.push(currentBb.max);
+        } else {
+          currVal -= step;
+          currentBb.range.push((currentBb.min += 0.01));
+        }
+        list.push(currVal);
+      }
+
+      return list[
+        currentBb.range.findIndex((item) => Number(this.scale) >= Number(item.toFixed(2)))
+      ];
     },
 
     linePath() {

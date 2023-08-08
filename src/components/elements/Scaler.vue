@@ -2,8 +2,8 @@
   <input
     type="range"
     min="0.22"
-    max="0.66"
-    step="0.22"
+    max="0.82"
+    step="0.01"
     v-model="zoom"
     v-on:input="(e) => handleChange(e)"
     id="scaler"
