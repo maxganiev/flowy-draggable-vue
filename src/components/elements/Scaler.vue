@@ -1,7 +1,7 @@
 <template>
   <input
     type="range"
-    min="0.22"
+    min="0.28"
     max="0.82"
     step="0.01"
     v-model="zoom"

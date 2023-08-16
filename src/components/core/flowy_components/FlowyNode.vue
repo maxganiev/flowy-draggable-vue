@@ -31,16 +31,16 @@
         />
 
         <!-- Vertical line -->
-        <!-- <ConnectorLine
+        <ConnectorLine
           vertical
           v-if="hasChildren"
           :styling="{
             ...lineMargins,
-            zoom,
-            transform: `translateY(-${translateY}px) scale(${zoom})`,
+            transform: `scale(${zoom})`,
+            'transform-origin': '0px center',
           }"
           :path="linePathDown"
-        /> -->
+        />
         <DropIndicator :show="showIndicator" :not-allowed="!dropAllowed" />
 
         <dropzone
@@ -169,7 +169,7 @@ export default {
       xPosProxy: 0,
       width: 0,
       dropAllowed: true,
-      baseTrY: 30,
+      //baseTrY: 0,
     };
   },
 
@@ -188,6 +188,10 @@ export default {
   computed: {
     zoom() {
       return 1 + Number(1 - this.scale);
+    },
+
+    baseTrY() {
+      return Number(this.scale) <= 0.35 ? 0 : 5;
     },
 
     xPos() {
@@ -239,14 +243,12 @@ export default {
       return this.node.props;
     },
 
-    /**
-     * vertical connector line - temporarily removed
+    /*vertical connector line - temporarily removed*/
     linePathDown() {
       const lineHeight = this.lineTotalHeight / 2;
-      const topCoeff = Number(this.scale) >= 1 ? this.top / this.scale : this.top * this.scale;
-      return `M0 0L0 ${lineHeight}L0 ${lineHeight}L0 ${lineHeight + topCoeff}`;
+      // const topCoeff = Number(this.scale) >= 1 ? this.top / this.scale : this.top * this.scale;
+      return `M0 0L0 ${lineHeight}L0 ${lineHeight}L0 ${lineHeight}`;
     },
-    */
 
     withinParent() {
       return;
@@ -257,9 +259,9 @@ export default {
       const breakPoints = [
         { min: 0.22, max: 0.24, maxValue: 1.4, minValue: 0.95 },
         { min: 0.25, max: 0.28, maxValue: 1.25, minValue: 0.95 },
-        { min: 0.29, max: 0.33, maxValue: 1.15, minValue: 0.85 },
-        { min: 0.34, max: 0.4, maxValue: 1.05, minValue: 0.85 },
-        { min: 0.41, max: 0.51, maxValue: 0.95, minValue: 0.85 },
+        { min: 0.29, max: 0.33, maxValue: 1.3, minValue: 0.85 },
+        { min: 0.34, max: 0.4, maxValue: 1.2, minValue: 0.85 },
+        { min: 0.41, max: 0.51, maxValue: 1, minValue: 0.95 },
         { min: 0.52, max: 0.82, maxValue: 0.88, minValue: 0.7 },
       ];
 
