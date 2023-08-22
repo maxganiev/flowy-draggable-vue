@@ -234,6 +234,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  //transform: translateY(-35px);
 }
 .flowy-node-wrapper {
   width: 320px;

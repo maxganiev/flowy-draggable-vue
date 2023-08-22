@@ -62,10 +62,10 @@
     </draggable>
 
     <!-- children tree -->
-
     <div
       class="flowy-tree flex flex-row flex-no-wrap overflow-visible mt-64px"
       data-tree="flowy-tree"
+      :style="{ transform: isSingleChild ? 'translateY(-30px)' : 'translateY(10px)' }"
     >
       <template v-for="(child, index) in children">
         <flowy-node
@@ -203,6 +203,10 @@ export default {
       return this.children.length > 0;
     },
 
+    isSingleChild() {
+      return this.children.length === 1;
+    },
+
     showIndicator() {
       return this.hoveringWithDrag;
     },
@@ -245,13 +249,8 @@ export default {
 
     /*vertical connector line - temporarily removed*/
     linePathDown() {
-      const lineHeight = this.lineTotalHeight / 2;
-      // const topCoeff = Number(this.scale) >= 1 ? this.top / this.scale : this.top * this.scale;
+      const lineHeight = this.lineTotalHeight * (!this.hasSingleChild ? 0.75 : 0);
       return `M0 0L0 ${lineHeight}L0 ${lineHeight}L0 ${lineHeight}`;
-    },
-
-    withinParent() {
-      return;
     },
 
     /**@desc Поправки к расчетам высоты и ширины svg линий для зумера */
@@ -295,7 +294,7 @@ export default {
     },
 
     linePath() {
-      const height = this.lineTotalHeight / 2;
+      const height = this.lineTotalHeight / 1.5;
       const width = this.lengthFromMiddle;
       const modifier = this.isLeftSide ? "" : "-";
       const adaptiveHeight = Number(
