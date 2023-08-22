@@ -249,7 +249,7 @@ export default {
 
     /*vertical connector line - temporarily removed*/
     linePathDown() {
-      const lineHeight = this.lineTotalHeight * (!this.hasSingleChild ? 0.75 : 0);
+      const lineHeight = this.lineTotalHeight * 0.75;
       return `M0 0L0 ${lineHeight}L0 ${lineHeight}L0 ${lineHeight}`;
     },
 
