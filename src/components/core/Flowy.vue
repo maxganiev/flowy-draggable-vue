@@ -305,7 +305,7 @@ export default {
   position: absolute;
   width: 100%;
   height: 128px;
-  bottom: -64px;
+  bottom: -32px;
 }
 
 .flowy.dragging .node-dropzone {
