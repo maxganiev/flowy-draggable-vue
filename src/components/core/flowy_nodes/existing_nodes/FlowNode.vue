@@ -188,9 +188,9 @@ export default {
       const dTime = currentTime - startTime;
       const speed = dTime < 1000 ? 10 : 25;
 
-      if (node.top - speed < 0) return;
+      //if (node.top - speed < 0) return;
       node.top -= speed;
-      node.parentId !== -1 && this.nodeIsTranslating && this.hideLineOnTranslate();
+      node.parentId !== -1 && this.nodeIsTranslating && node.top >= 0 && this.hideLineOnTranslate();
 
       setTimeout(() => {
         this.nodeUp(node, startTime);
@@ -205,7 +205,7 @@ export default {
       const speed = dTime < 1000 ? 10 : 25;
 
       node.top += speed;
-      node.parentId !== -1 && this.nodeIsTranslating && this.hideLineOnTranslate();
+      node.parentId !== -1 && this.nodeIsTranslating && node.top >= 0 && this.hideLineOnTranslate();
 
       setTimeout(() => {
         this.nodeDown(node, startTime);
@@ -217,7 +217,12 @@ export default {
         child.classList.contains("flowy-line-block")
       );
 
-      if (!line) throw new Error("Check class spelling!");
+      if (!line) {
+        console.log("Line still rendered...");
+        //throw new Error("Check class spelling!");
+        return;
+      }
+
       line.style.opacity = "0";
 
       setTimeout(() => {

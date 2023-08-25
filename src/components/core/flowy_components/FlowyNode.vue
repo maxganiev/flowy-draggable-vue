@@ -20,7 +20,7 @@
         <!-- Horizontal line -->
         <ConnectorLine
           verticalOffset
-          v-if="!isTopParent && mounted"
+          v-if="!isTopParent && mounted && node.top >= 0"
           :styling="{
             ...lineMargins,
             transform: `translateY(-${baseTrY + top}px) translateX(0) scale(${zoom})`,
@@ -33,7 +33,7 @@
         <!-- Vertical line -->
         <ConnectorLine
           vertical
-          v-if="hasChildren"
+          v-if="hasChildren && node.top >= 0 && children.length >= 2"
           :styling="{
             ...lineMargins,
             transform: `scale(${zoom})`,

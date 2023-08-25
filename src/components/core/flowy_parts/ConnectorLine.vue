@@ -51,7 +51,7 @@ export default {
       }
     });
 
-    !this.withinParent && this.hideLineWhileDragging();
+    //!this.withinParent && this.hideLineWhileDragging();
   },
 
   computed: {
@@ -72,21 +72,28 @@ export default {
      * значения ширины в path на "0"
      */
     redrawPath() {
-      const el = this.$refs.svgLine;
-      const pathOldWidth = el.getAttribute("d").slice(1).split(" ")[0];
-      const newPath = el.getAttribute("d").replaceAll(pathOldWidth, "0");
-      el.setAttribute("d", newPath);
+      const line = this.$refs.svgLine;
+
+      if (!line) {
+        console.log("Line still rendered...");
+        //throw new Error("Check class spelling!");
+        return;
+      }
+
+      const pathOldWidth = line.getAttribute("d").slice(1).split(" ")[0];
+      const newPath = line.getAttribute("d").replaceAll(pathOldWidth, "0");
+      line.setAttribute("d", newPath);
     },
 
     updateParentOffset() {
       this.offset = this.parent.getBoundingClientRect();
     },
 
-    hideLineWhileDragging() {
-      this.$refs.svgLine.style.opacity = this.$refs.svgWrapper.classList.contains("isDragged")
-        ? 0
-        : 1;
-    },
+    // hideLineWhileDragging() {
+    //   this.$refs.svgLine.style.opacity = this.$refs.svgWrapper.classList.contains("isDragged")
+    //     ? 1
+    //     : 1;
+    // },
   },
 };
 </script>
