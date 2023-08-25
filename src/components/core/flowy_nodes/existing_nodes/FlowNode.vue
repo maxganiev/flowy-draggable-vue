@@ -188,7 +188,7 @@ export default {
       const dTime = currentTime - startTime;
       const speed = dTime < 1000 ? 10 : 25;
 
-      //if (node.top - speed < 0) return;
+      if (node.parentId === -1 && node.top - speed < 0) return;
       node.top -= speed;
       node.parentId !== -1 && this.nodeIsTranslating && node.top >= 0 && this.hideLineOnTranslate();
 
