@@ -94,7 +94,7 @@ export const getUsersScheme = () =>
     ];
 
     setTimeout(() => {
-      //resolve(usersScheme);
-      resolve([]);
+      resolve(usersScheme);
+      //resolve([]);
     }, 200);
   });

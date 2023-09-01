@@ -1,6 +1,7 @@
 <template>
   <button
     class="expander"
+    :style="{ ...styling }"
     @click="
       (e) => {
         callback();
@@ -23,6 +24,10 @@ export default {
     callback: {
       type: Function,
       required: true,
+    },
+
+    styling: {
+      type: Object,
     },
   },
   methods: {

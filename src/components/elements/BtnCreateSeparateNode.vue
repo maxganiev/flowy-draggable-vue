@@ -13,7 +13,6 @@
 import { store } from "@/store";
 import { User } from "@/lib/constructors/User";
 import { Block } from "@/lib/constructors/Block";
-import Flowy from "core/Flowy.vue";
 
 export default {
   name: "BtnCreateSeparateNode",

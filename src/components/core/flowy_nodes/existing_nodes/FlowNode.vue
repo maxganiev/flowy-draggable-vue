@@ -70,15 +70,39 @@
       </div>
     </div>
 
-    <div class="btn-panel" v-if="showPart">
+    <BtnOptions
+      v-if="render"
+      :styling="{
+        position: 'absolute',
+        right: '-15px',
+        top: node.type === 'user' ? '30px' : '50px',
+        background: showPanel ? '#fff' : '#000',
+        color: showPanel ? '#000' : '#fff',
+      }"
+      :callback="() => (showPanel = !showPanel)"
+    />
+    <BtnExpander
+      v-if="node.type === 'user'"
+      :callback="() => (showDescr = !showDescr)"
+      :isClosed="!showDescr"
+      :styling="{
+        position: 'absolute',
+        right: render ? '-15px' : '0px',
+        top: render ? '80px' : 'calc(50% - 20px)',
+      }"
+    />
+
+    <div
+      class="btn-panel"
+      v-if="render"
+      :style="{
+        zIndex: showPanel ? 1 : -1,
+        right: showPanel ? `15px` : '10px',
+      }"
+    >
       <BtnCreateSeparateNode :node="node" />
       <BtnEditNode :node-id="node.id" />
       <BtnRemoveFlowyNode :remove="remove" />
-      <BtnExpander
-        v-if="node.type === 'user'"
-        :callback="() => (showDescr = !showDescr)"
-        :isClosed="!showDescr"
-      />
     </div>
   </div>
 </template>
@@ -86,6 +110,7 @@
 <script>
 /* eslint-disable no-unused-vars */
 import BtnCreateSeparateNode from "elements/BtnCreateSeparateNode.vue";
+import BtnOptions from "elements/BtnOptions.vue";
 import BtnEditNode from "elements/BtnEditNode.vue";
 import BtnRemoveFlowyNode from "elements/BtnRemoveFlowyNode.vue";
 import BtnExpander from "elements/BtnExpander.vue";
@@ -100,6 +125,7 @@ export default {
   data: () => ({
     store,
     showDescr: false,
+    showPanel: false,
     render: false,
     contenteditables: [],
     nodeIsTranslating: false,
@@ -144,6 +170,7 @@ export default {
 
   components: {
     BtnCreateSeparateNode,
+    BtnOptions,
     BtnEditNode,
     BtnRemoveFlowyNode,
     BtnExpander,
@@ -236,15 +263,17 @@ export default {
 <style lang="scss" scoped>
 .panel-wrapper {
   width: 380px;
+  height: 125px;
   display: flex;
   align-items: center;
   justify-content: center;
   //transform: translateY(-35px);
 }
 .flowy-node-wrapper {
-  width: 320px;
-  height: 200px;
-  //overflow: scroll;
+  width: 340px;
+  height: 125px;
+  // width: 320px;
+  // height: 200px;
   cursor: default;
   border-radius: 20px;
   border: none;
@@ -252,7 +281,7 @@ export default {
 
 .wrapper-block {
   background-color: $clr-emerald;
-  height: 200px;
+  height: 125px;
 
   .text {
     display: flex;
@@ -284,10 +313,13 @@ export default {
       max-width: 50%;
 
       img {
-        width: 100%;
-        height: 100%;
+        // width: 100%;
+        // height: 100%;
+        width: 125px;
+        height: 125px;
         object-fit: contain;
-        border-radius: 20px;
+        border-radius: 10px;
+        max-width: unset;
       }
     }
 
@@ -297,12 +329,13 @@ export default {
       display: flex;
       flex-direction: column;
       justify-content: center;
-      margin-left: 20px;
+      margin: 0 10px;
+      font-size: 0.9rem;
 
       %span-tip-shared {
         display: block;
         font-weight: 700;
-        font-size: 1.6rem;
+        font-size: 0.9rem;
 
         &:hover {
           cursor: pointer;
@@ -311,7 +344,6 @@ export default {
       }
 
       p {
-        font-size: 1rem;
         color: #fff;
 
         .span-show-full {
@@ -320,7 +352,6 @@ export default {
       }
 
       a {
-        font-size: 1rem;
         font-weight: 700;
         color: #fff;
       }
@@ -356,14 +387,17 @@ export default {
 }
 
 .btn-panel {
-  height: 165px;
-  background-color: $clr-emerald;
-  padding: 10px 5px;
+  background-color: #00606f;
   display: flex;
-  flex-direction: column;
   justify-content: space-evenly;
-  border-radius: 0 10px 10px 0;
-  transform: translateX(-1.5px);
+  border-radius: 10px;
+  position: absolute;
+  right: 10px;
+  height: 100%;
+  width: 87%;
+  align-items: center;
+  transition: right 0.4s ease-out;
+  z-index: -1;
 
   button:hover {
     transform: scale(1.2);
