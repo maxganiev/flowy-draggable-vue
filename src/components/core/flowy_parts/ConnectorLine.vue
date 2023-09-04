@@ -9,6 +9,7 @@
       class="flowy-line"
       preserveaspectratio="none"
       fill="none"
+      :stroke-dasharray="isDotted ? 4 : 0"
       xmlns="http://www.w3.org/2000/svg"
     >
       <!-- line -->
@@ -30,6 +31,11 @@ export default {
     verticalOffset: Boolean,
     path: String,
     showArrow: Boolean,
+    isDotted: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
 
   mounted() {

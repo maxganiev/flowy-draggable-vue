@@ -69,7 +69,8 @@ export default {
 <style lang="scss" scoped>
 .user-block {
   background-color: $clr-emerald;
-  width: 280px;
+  width: $block_width;
+  height: $block_height;
   border-radius: 20px;
   font-size: $fs-mid-reg;
 
@@ -94,19 +95,28 @@ export default {
       }
 
       .thumb-wrapper {
-        max-width: 120px;
-        max-height: 120px;
+        width: $thumb-width;
+        height: $thumb-height;
+        border-radius: $thumb_border_radius;
+        // max-width: 120px;
+        // max-height: 120px;
         overflow: hidden;
 
         img {
-          border-radius: 20px 0px 0 0;
+          width: 100%;
+          height: 100%;
+          max-height: 100px;
+          object-fit: contain;
         }
       }
 
       .text-wrapper {
-        max-width: 130px;
+        max-width: 150px;
         font-size: $fs-mid-reg;
         color: #fff;
+        height: 80%;
+        color: #fff;
+        text-align: center;
 
         a {
           font-weight: 700;
@@ -117,7 +127,7 @@ export default {
 
       button {
         position: absolute;
-        bottom: 5px;
+        bottom: 15px;
         right: 1px;
         font-size: $fs-mid-reg !important;
       }

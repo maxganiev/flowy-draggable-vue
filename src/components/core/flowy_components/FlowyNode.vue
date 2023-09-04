@@ -28,6 +28,7 @@
           }"
           :path="linePath"
           :class="{ isDragged: schemaIsDragged }"
+          :isDotted="node.useDottedConnectorLine"
         />
 
         <!-- Vertical line -->
@@ -40,6 +41,7 @@
             'transform-origin': '0px center',
           }"
           :path="linePathDown"
+          :isDotted="node.useDottedConnectorLine"
         />
         <DropIndicator :show="showIndicator" :not-allowed="!dropAllowed" />
 

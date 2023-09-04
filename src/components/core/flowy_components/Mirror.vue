@@ -40,8 +40,8 @@ export default {
   position: absolute;
   z-index: 1000;
   background-color: $clr-emerald;
-  width: 320px;
-  height: 200px;
+  width: 340px;
+  height: 125px;
   color: #fff;
   opacity: 0.6;
   text-align: center;

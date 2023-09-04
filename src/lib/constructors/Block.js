@@ -3,7 +3,8 @@ export class Block {
     /**@type {Number}*/ parentId,
     /**@type {Number}*/ id,
     /**@type {String}*/ descr,
-    /**@type {Number} @desc {кол-во px, на которые необходимо сместить текущий нод по У, начиная от 0 (x100)} */ top
+    /**@type {Number} @desc {кол-во px, на которые необходимо сместить текущий нод по У, начиная от 0 (x100)} */ top,
+    /**@type  {Boolean}*/ useDottedConnectorLine
   ) {
     this.parentId = parentId;
     this.id = id;
@@ -11,6 +12,7 @@ export class Block {
       descr,
     };
     this.top = top;
+    this.useDottedConnectorLine = useDottedConnectorLine;
   }
 
   get nodeComponent() {

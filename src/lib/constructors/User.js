@@ -8,7 +8,8 @@ export class User {
     /**@type {String}*/ position_name,
     /**@type {String | null}*/ descr,
     /**@type {Number} @desc {кол-во px, на которые необходимо сместить текущий нод по У, начиная от 0 } */ top,
-    /**@type {string[]} */ tags
+    /**@type {String[]} */ tags,
+    /**@type  {Boolean}*/ useDottedConnectorLine
   ) {
     this.parentId = parentId;
     this.id = id;
@@ -22,6 +23,7 @@ export class User {
     };
     this.top = top;
     this.tags = tags;
+    this.useDottedConnectorLine = useDottedConnectorLine;
   }
 
   get nodeComponent() {

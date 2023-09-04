@@ -19,6 +19,7 @@
           :descr="item.data.descr"
           :top="item.top"
           :tags="item.tags"
+          :useDottedConnectorLine="false"
         />
       </template>
 
@@ -35,6 +36,7 @@
           :descr="item.data.descr"
           :top="item.top"
           :tags="item.tags"
+          :useDottedConnectorLine="false"
         />
       </template>
     </flowy-new-block>

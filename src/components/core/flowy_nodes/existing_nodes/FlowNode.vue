@@ -102,7 +102,52 @@
     >
       <BtnCreateSeparateNode :node="node" />
       <BtnEditNode :node-id="node.id" />
+      <BtnSetConnectorLine @onClick="connectorLine.setShow(node)" />
       <BtnRemoveFlowyNode :remove="remove" />
+    </div>
+
+    <div v-if="connectorLine.show" class="connector-line-modal">
+      <strong>Тип соединительной линии:</strong>
+      <BtnClose @onClose="connectorLine.setShow()" />
+      <ul>
+        <li>
+          <input
+            type="radio"
+            value="1"
+            v-model="connectorLine.type"
+            @change="setNodeConnectorLine"
+          />
+          <span>
+            Сплошная
+            <svg height="40" width="40">
+              <line x1="0" y1="0" x2="200" y2="0" style="stroke: #00606f; stroke-width: 2" />
+              Sorry, your browser does not support inline SVG.
+            </svg></span
+          >
+        </li>
+        <li>
+          <input
+            type="radio"
+            value="2"
+            v-model="connectorLine.type"
+            @change="setNodeConnectorLine"
+          />
+          <span
+            >Пунктирная
+            <svg height="40" width="40">
+              <line
+                stroke-dasharray="4"
+                x1="0"
+                y1="0"
+                x2="200"
+                y2="0"
+                style="stroke: #00606f; stroke-width: 2"
+              />
+              Sorry, your browser does not support inline SVG.
+            </svg></span
+          >
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -112,8 +157,10 @@
 import BtnCreateSeparateNode from "elements/BtnCreateSeparateNode.vue";
 import BtnOptions from "elements/BtnOptions.vue";
 import BtnEditNode from "elements/BtnEditNode.vue";
+import BtnSetConnectorLine from "elements/BtnSetConnectorLine.vue";
 import BtnRemoveFlowyNode from "elements/BtnRemoveFlowyNode.vue";
 import BtnExpander from "elements/BtnExpander.vue";
+import BtnClose from "../../../elements/BtnClose.vue";
 import { store } from "@/store.js";
 import { User } from "@/lib/constructors/User";
 import { Block } from "@/lib/constructors/Block";
@@ -131,6 +178,19 @@ export default {
     nodeIsTranslating: false,
     showFullPosition: false,
     avaTemplate: null,
+    connectorLine: {
+      show: false,
+      type: 1,
+      revisedNode: {},
+      setShow(node) {
+        this.show = !this.show;
+
+        if (this.show) {
+          this.revisedNode = node;
+          this.type = this.revisedNode.useDottedConnectorLine ? 2 : 1;
+        } else this.revisedNode = {};
+      },
+    },
   }),
 
   props: {
@@ -171,9 +231,11 @@ export default {
   components: {
     BtnCreateSeparateNode,
     BtnOptions,
+    BtnSetConnectorLine,
     BtnEditNode,
     BtnRemoveFlowyNode,
     BtnExpander,
+    BtnClose,
     TransformPanel,
     Pic,
   },
@@ -256,24 +318,26 @@ export default {
         line.style.opacity = "1";
       }, 200);
     },
+
+    setNodeConnectorLine() {
+      this.connectorLine.revisedNode.useDottedConnectorLine = this.connectorLine.type == 2;
+      store.toggleShemaStatus(true);
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
 .panel-wrapper {
-  width: 380px;
-  height: 125px;
+  width: $block_width;
+  height: $block_height;
   display: flex;
   align-items: center;
   justify-content: center;
-  //transform: translateY(-35px);
 }
 .flowy-node-wrapper {
-  width: 340px;
-  height: 125px;
-  // width: 320px;
-  // height: 200px;
+  width: $block_width;
+  height: $block_height;
   cursor: default;
   border-radius: 20px;
   border: none;
@@ -281,7 +345,7 @@ export default {
 
 .wrapper-block {
   background-color: $clr-emerald;
-  height: 125px;
+  height: $block_height;
 
   .text {
     display: flex;
@@ -307,19 +371,16 @@ export default {
     height: 100%;
 
     .thumb-wrapper {
-      // width: 100px;
-      // height: 100px;
-      height: 100%;
-      max-width: 50%;
+      height: $thumb_height;
+      width: $thumb_width;
+      border-radius: $thumb_border_radius;
+      //max-width: 50%;
 
       img {
-        // width: 100%;
-        // height: 100%;
-        width: 125px;
-        height: 125px;
+        width: 100%;
+        height: 100%;
         object-fit: contain;
-        border-radius: 10px;
-        max-width: unset;
+        border-radius: $thumb_border_radius;
       }
     }
 
@@ -402,6 +463,39 @@ export default {
   button:hover {
     transform: scale(1.2);
     transition: all 0.4s ease-out;
+  }
+}
+
+.connector-line-modal {
+  width: 110%;
+  height: 110%;
+  position: absolute;
+  z-index: 1;
+  top: -10px;
+  left: 0;
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px;
+
+  button {
+    position: absolute;
+    right: 10px;
+  }
+
+  strong {
+    margin: 10px 5px;
+  }
+
+  ul > li {
+    input {
+      margin: 0 5px;
+    }
+
+    svg {
+      height: 5px;
+      display: inline-block;
+      margin-left: 10px;
+    }
   }
 }
 </style>

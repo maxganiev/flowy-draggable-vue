@@ -11,11 +11,21 @@
       <BtnCreateSeparateNode :node="blockSelf" @createSeparateNode="blockIsInQueue = false" />
       <flowy-new-block @drag-stop="handleDragStop" @drag-start="handleDragStart">
         <template v-slot:preview="{}">
-          <new-flow-block :id="blockSelf.id" :descr="blockSelf.data.descr" :top="blockSelf.top" />
+          <new-flow-block
+            :id="blockSelf.id"
+            :descr="blockSelf.data.descr"
+            :top="blockSelf.top"
+            :useDottedConnectorLine="false"
+          />
         </template>
 
         <template v-slot:node="{}">
-          <flow-node :id="blockSelf.id" :descr="blockSelf.data.descr" :top="blockSelf.top" />
+          <flow-node
+            :id="blockSelf.id"
+            :descr="blockSelf.data.descr"
+            :top="blockSelf.top"
+            :useDottedConnectorLine="false"
+          />
         </template>
       </flowy-new-block>
     </div>
