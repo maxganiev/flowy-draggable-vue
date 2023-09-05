@@ -485,7 +485,7 @@ export default {
   position: absolute;
   right: 10px;
   height: 100%;
-  width: 87%;
+  width: 100%;
   align-items: center;
   transition: right 0.4s ease-out;
   z-index: -1;
