@@ -34,7 +34,7 @@
         <!-- Vertical line -->
         <ConnectorLine
           vertical
-          v-if="hasChildren && node.top >= 0 && children.length >= 2"
+          v-if="hasChildren && children.length >= 2"
           :styling="{
             ...lineMargins,
             transform: `scale(${zoom})`,
