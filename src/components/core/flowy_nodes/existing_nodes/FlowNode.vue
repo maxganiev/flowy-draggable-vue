@@ -58,11 +58,7 @@
       :data-type="node.type"
       :data-id="node.id"
     >
-      <div class="text">
-        <p>
-          {{ strippedDesc }}
-        </p>
-      </div>
+      <div class="text" v-html="description"></div>
 
       <div class="drag-handle-wrapper" v-if="render">
         <flowy-drag-handle>
@@ -252,7 +248,17 @@ export default {
     },
 
     strippedDesc() {
-      return this.$props.descr ? stripHtml(this.$props.descr) : "";
+      return this.$props.descr ? stripHtml(this.$props.descr).replaceAll(/\u00a0/g, "") : "";
+    },
+
+    description() {
+      if (["http", "https"].some((d) => this.descr.toLowerCase().includes(d)))
+        return `<a href="${this.descr}" target="_blank" class="block-link-label">${
+          this.descr.length > 19 ? this.descr.slice(0, 19) + "..." : this.descr
+        }</a>`;
+      if (["@", "mailto"].some((d) => this.descr.toLowerCase().includes(d)))
+        return `<a href="mailto:"${this.descr}" class="block-link-label">${this.descr}</a>`;
+      return `<p>${this.descr}</p>`;
     },
   },
 
@@ -384,7 +390,6 @@ export default {
     height: 80%;
     font-size: 1.6rem;
     color: #fff;
-    font-weight: 700;
     text-align: center;
   }
 }
@@ -472,7 +477,9 @@ export default {
 
 .descr-wrapper {
   padding: 5px 10px;
-  background: $clr-milk;
+  background: $clr-orange;
+  color: $clr-milk;
+  border-radius: 10px;
   font-size: $fs-mid-head;
   border-left: $border-main;
 }
@@ -502,10 +509,11 @@ export default {
   position: absolute;
   z-index: 1;
   top: -10px;
-  left: 0;
+  left: -15.8px;
   background: #fff;
   border-radius: 10px;
   padding: 10px;
+  font-size: $fs-mid-reg;
 
   button {
     position: absolute;
@@ -514,11 +522,15 @@ export default {
 
   strong {
     margin: 10px 5px;
+    font-weight: 700;
+    font-size: $fs-mid-head;
   }
 
   ul > li {
     input {
       margin: 0 5px;
+      height: 1.4rem;
+      aspect-ratio: 1;
     }
 
     svg {

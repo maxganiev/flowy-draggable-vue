@@ -42,9 +42,9 @@ export default {
   border-radius: 50px;
   position: absolute;
   bottom: 2.5px;
-  left: 2.5px;
+  left: -6.5px;
   z-index: 1;
-  width: 50px;
+  width: 60px;
   aspect-ratio: 1;
 
   button {

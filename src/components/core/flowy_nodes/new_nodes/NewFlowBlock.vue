@@ -6,11 +6,7 @@
       </div>
     </flowy-drag-handle>
 
-    <div class="text-wrapper">
-      <p>
-        {{ descr }}
-      </p>
-    </div>
+    <div class="text-wrapper" v-html="description"></div>
   </div>
 </template>
 
@@ -33,7 +29,18 @@ export default {
       required: true,
     },
   },
-  methods: {},
+
+  computed: {
+    description() {
+      if (["http", "https"].some((d) => this.descr.toLowerCase().includes(d)))
+        return `<a href="${this.descr}" target="_blank" class="block-link-label">${
+          this.descr.length > 19 ? this.descr.slice(0, 19) + "..." : this.descr
+        }</a>`;
+      if (["@", "mailto"].some((d) => this.descr.toLowerCase().includes(d)))
+        return `<a href="mailto:"${this.descr}" class="block-link-label">${this.descr}</a>`;
+      return `<p>${this.descr}</p>`;
+    },
+  },
 };
 </script>
 
@@ -59,7 +66,6 @@ export default {
   background: $clr-emerald;
   margin: 20px 10px;
   border-radius: 30px;
-  font-weight: 700;
   z-index: 200;
 }
 </style>

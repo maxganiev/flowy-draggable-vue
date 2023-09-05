@@ -9,7 +9,7 @@ export class User {
     /**@type {String | null}*/ descr,
     /**@type {Number} @desc {кол-во px, на которые необходимо сместить текущий нод по У, начиная от 0 } */ top,
     /**@type {String[]} */ tags,
-    /**@type  {Boolean}*/ useDottedConnectorLine
+    /**@type  {Boolean}*/ useDottedConnectorLine = false
   ) {
     this.parentId = parentId;
     this.id = id;
