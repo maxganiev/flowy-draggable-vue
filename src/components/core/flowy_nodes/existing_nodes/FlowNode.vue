@@ -4,6 +4,7 @@
       v-if="render"
       :onMouseDown="(e) => onBtnPress(node, e)"
       :onMouseUp="onBtnRelease"
+      :onClick="(e) => replaceNode(node, e)"
     />
     <div
       v-if="node.type === 'user'"
@@ -299,6 +300,35 @@ export default {
       setTimeout(() => {
         this.nodeDown(node, startTime);
       }, 100);
+    },
+
+    replaceNode(node, e) {
+      const nodeTree = store.nodes.filter((item) => item.parentId === node.parentId);
+
+      if (nodeTree.length === 1) return;
+      const replaceLeft = e.target.getAttribute("data-direction") === "left";
+      const nodeTreeIndex = nodeTree.findIndex((i) => i.id === node.id);
+      const nodeIndex = store.nodes.findIndex((i) => i.id === node.id);
+
+      if (
+        (replaceLeft && nodeTreeIndex === 0) ||
+        (!replaceLeft && nodeTreeIndex === nodeTree.length - 1)
+      )
+        return;
+
+      const spliced = getNode();
+
+      store.nodes.splice(nodeIndex, 1, spliced[0]);
+      store.toggleShemaStatus(true);
+
+      function getNode() {
+        const siblingNodeTreeIndex =
+          nodeTree.findIndex((i) => i.id === node.id) - (replaceLeft ? 1 : -1);
+        const siblingNodeId = nodeTree[siblingNodeTreeIndex].id;
+        const siblingNodeIndex = store.nodes.findIndex((i) => i.id === siblingNodeId);
+
+        return store.nodes.splice(siblingNodeIndex, 1, store.nodes[nodeIndex]);
+      }
     },
 
     hideLineOnTranslate() {
