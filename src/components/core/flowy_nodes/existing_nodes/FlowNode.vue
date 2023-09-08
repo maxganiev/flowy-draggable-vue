@@ -383,6 +383,7 @@ export default {
   padding: 0;
   margin: 0;
   border-radius: 20px;
+  overflow: hidden;
 
   .main-info-wrapper {
     position: relative;
