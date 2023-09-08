@@ -34,22 +34,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.mirror-wrapper {
-  position: absolute;
-  z-index: 1000;
-  background-color: $clr-emerald;
-  width: 340px;
-  height: 125px;
-  color: #fff;
-  opacity: 0.6;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  font-size: $fs-sm;
-  padding: 5px 10px;
-  border-radius: 30px;
-}
-</style>

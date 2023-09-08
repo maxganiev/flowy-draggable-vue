@@ -1,6 +1,6 @@
 <template>
-  <button v-if="render" class="btn btn-edit" @click="onEdit">
-    <i class="fa-solid fa-marker"></i>
+  <button class="btn btn-edit" @click="onEdit" title="Редактировать узел">
+    <font-awesome-icon icon="fa-solid fa-marker" />
   </button>
 </template>
 
@@ -18,14 +18,7 @@ export default {
 
   data: () => ({
     store,
-    //by default
-    render: false,
   }),
-
-  beforeMount() {
-    //here we check if current user is allowed to update scheme
-    this.render = store.adminsIds.includes(store.user.id);
-  },
 
   methods: {
     onEdit() {

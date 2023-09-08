@@ -67,7 +67,12 @@
       <div class="div-confirm-changes">
         <CheckSwitch
           v-show="isUserType"
-          :labelContent="'Синхронизировать с профилем сотрудника на Портале'"
+          :labelContent="
+            !editableNode.isCloned
+              ? 'Синхронизировать с профилем сотрудника на Портале'
+              : 'Копия узла не может быть синхронизирована'
+          "
+          :disabled="editableNode.isCloned"
           :styling="{
             label: {
               display: 'inline-block',
@@ -75,7 +80,7 @@
               'margin-top': '5px',
             },
           }"
-          @onChange="syncWithDb = !syncWithDb"
+          @onChange="syncDb"
         />
         <button
           class="btn"
@@ -230,6 +235,11 @@ export default {
       store.updateNode(this.editableNode);
       this.alert.setAlert("success", true, "<h4> Изменения успешно внесены, спасибо! </h4>");
       store.saveNodes();
+    },
+
+    syncDb() {
+      if (this.editableNode.isCloned) return;
+      this.syncWithDb = !this.syncWithDb;
     },
   },
 

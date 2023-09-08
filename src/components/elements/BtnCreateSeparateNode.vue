@@ -1,11 +1,10 @@
 <template>
   <button
-    v-if="render"
     class="btn btn-create-separate-node"
     @click="createSeparateNode() && scrollToRecentlyAdded()"
     title="Создать отдельную подчиненность для узла"
   >
-    <i class="fa-solid fa-people-roof"></i>
+    <font-awesome-icon icon="fa-solid fa-people-roof" />
   </button>
 </template>
 
@@ -13,6 +12,7 @@
 import { store } from "@/store";
 import { User } from "@/lib/constructors/User";
 import { Block } from "@/lib/constructors/Block";
+import { scrollToRecentlyAdded } from "@/lib/scrollToRecentlyAdded";
 
 export default {
   name: "BtnCreateSeparateNode",
@@ -26,8 +26,7 @@ export default {
 
   data: () => ({
     store,
-    //by default
-    render: false,
+    scrollToRecentlyAdded,
   }),
 
   beforeMount() {
@@ -66,19 +65,6 @@ export default {
 
       this.$emit("createSeparateNode", this.createSeparateNode);
       return confirmedNewStructure;
-    },
-
-    scrollToRecentlyAdded() {
-      setTimeout(() => {
-        const flowyHTMLCollection = document.getElementsByClassName("flowy-node");
-        const recentlyAddedFlowyElem = flowyHTMLCollection[flowyHTMLCollection.length - 1];
-
-        recentlyAddedFlowyElem.firstElementChild.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-          inline: "center",
-        });
-      }, 100);
     },
   },
 };

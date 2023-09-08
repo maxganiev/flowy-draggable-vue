@@ -1,6 +1,10 @@
 <template>
-  <button class="btn-set-connector-line" @click="onClick">
-    <i class="fa-solid fa-chart-line"></i>
+  <button
+    class="btn-set-connector-line"
+    @click="onClick"
+    title="Изменить текущий вид соединительной линии"
+  >
+    <font-awesome-icon icon="fa-solid fa-chart-line" />
   </button>
 </template>
 

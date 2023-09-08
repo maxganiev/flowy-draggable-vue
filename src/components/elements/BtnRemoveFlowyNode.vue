@@ -1,9 +1,8 @@
 <template>
-  <button v-if="render" class="btn btn-remove" @click="remove()">x</button>
+  <button class="btn btn-remove" @click="remove()" title="Удалить узел">x</button>
 </template>
 
 <script>
-import { store } from "@/store";
 export default {
   name: "BtnRemoveFlowyNode",
   props: {
@@ -11,14 +10,6 @@ export default {
       type: Function,
       required: true,
     },
-  },
-  data: () => ({
-    //by default
-    render: false,
-  }),
-  beforeMount() {
-    //here we check if current user is allowed to update scheme
-    this.render = store.adminsIds.includes(store.user.id);
   },
 };
 </script>

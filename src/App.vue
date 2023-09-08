@@ -29,7 +29,8 @@
     </div>
     <Alert :alert-type="alert.type" :show="alert.show" :HTMLContent="alert.HTMLContent" />
     <Aside v-if="renderUsersTab" :users="store.users" />
-    <div class="flex-grow flex flex-row flex-no-wrap overflow-hidden" style="z-index: 100">
+    <div class="flex-grow flex-row flex-no-wrap overflow-hidden" style="z-index: 100">
+      <div class="scheme-label"><h3>Название схемы</h3></div>
       <div class="flex-grow overflow-auto scheme-wrapper" id="schemeWrapper" ref="schemeWrapper">
         <flowy
           v-if="store.nodes.length > 0"
@@ -267,10 +268,7 @@ body {
   background-size: 30px 30px;
   background-color: $clr-milk;
   cursor: grab;
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  user-select: none;
+  min-height: 100vh;
 }
 
 input[type="text"],
@@ -327,6 +325,21 @@ h4 {
 
 a {
   text-decoration: none;
+}
+
+.scheme-label {
+  text-align: center;
+  font-weight: 700;
+  padding: 10px 0;
+  color: $clr-orange;
+  font-size: $fs-lg;
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  background-color: $clr-milk;
 }
 
 .page {

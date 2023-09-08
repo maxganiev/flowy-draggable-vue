@@ -1,5 +1,11 @@
 <template>
   <div class="panel-wrapper">
+    <font-awesome-icon
+      v-if="node.isCloned && render"
+      icon="fa-solid fa-clone"
+      title="Узел - клон"
+    />
+
     <TransformPanel
       v-if="render"
       :onMouseDown="(e) => onBtnPress(node, e)"
@@ -12,7 +18,9 @@
       :data-type="node.type"
       :data-id="node.id"
     >
-      <div class="flex flex-row flex-no-wrap justify-between items-center p-4 upper-block">
+      <div
+        class="flex flex-row flex-no-wrap justify-between items-center p-4 no-select upper-block"
+      >
         <div class="flex flex-row flex-no-wrap justify-start items-center main-info-wrapper">
           <div class="thumb-wrapper">
             <Pic :src="'https://portal.elcomspb.ru/' + avatar_thumb" />
@@ -33,6 +41,12 @@
 
               <span class="span-hide-full" @click="showFullPosition = false">–</span>
             </span>
+
+            <BtnCollapseNodeTree
+              v-if="store.nodes.filter((_node) => _node.parentId === node.id).length > 0"
+              :node="node"
+              :styling="{ position: 'absolute', bottom: '6.5px', left: '32px' }"
+            />
           </div>
         </div>
 
@@ -43,22 +57,21 @@
         </div>
       </div>
 
-      <Transition name="fade">
-        <div v-show="showDescr" class="descr-wrapper">
-          <ul v-if="strippedDesc.indexOf('\n') !== -1">
-            <li v-for="word in strippedDesc.split('\n')">{{ word }}</li>
-          </ul>
-          <p v-else>{{ strippedDesc }}</p>
-        </div>
-      </Transition>
+      <div v-if="showDescr" class="descr-wrapper" v-html="userStrippedDesc"></div>
     </div>
     <div
       v-else="node.type === 'block'"
-      class="flowy-node-wrapper wrapper-block"
+      class="flowy-node-wrapper no-select wrapper-block"
       :data-type="node.type"
       :data-id="node.id"
     >
-      <div class="text" v-html="description"></div>
+      <div class="text-wrapper">
+        <div class="text" v-html="blockDesc" />
+        <BtnCollapseNodeTree
+          v-if="store.nodes.filter((_node) => _node.parentId === node.id).length > 0"
+          :node="node"
+        />
+      </div>
 
       <div class="drag-handle-wrapper" v-if="render">
         <flowy-drag-handle>
@@ -100,6 +113,7 @@
       <BtnCreateSeparateNode :node="node" />
       <BtnEditNode :node-id="node.id" />
       <BtnSetConnectorLine @onClick="connectorLine.setShow(node)" />
+      <BtnCloneNode v-if="node.type === 'user' && !node.isCloned" :node="node" />
       <BtnRemoveFlowyNode :remove="remove" />
     </div>
 
@@ -155,15 +169,18 @@ import BtnCreateSeparateNode from "elements/BtnCreateSeparateNode.vue";
 import BtnOptions from "elements/BtnOptions.vue";
 import BtnEditNode from "elements/BtnEditNode.vue";
 import BtnSetConnectorLine from "elements/BtnSetConnectorLine.vue";
+import BtnCloneNode from "elements/BtnCloneNode.vue";
 import BtnRemoveFlowyNode from "elements/BtnRemoveFlowyNode.vue";
 import BtnExpander from "elements/BtnExpander.vue";
-import BtnClose from "../../../elements/BtnClose.vue";
+import BtnClose from "elements/BtnClose.vue";
 import { store } from "@/store.js";
 import { User } from "@/lib/constructors/User";
 import { Block } from "@/lib/constructors/Block";
 import TransformPanel from "modules/TransformPanel.vue";
 import { stripHtml } from "@/lib/stripHtml";
 import Pic from "elements/Pic.vue";
+import { urlify } from "@/lib/urlify";
+import BtnCollapseNodeTree from "elements/BtnCollapseNodeTree.vue";
 
 export default {
   data: () => ({
@@ -230,11 +247,13 @@ export default {
     BtnOptions,
     BtnSetConnectorLine,
     BtnEditNode,
+    BtnCloneNode,
     BtnRemoveFlowyNode,
     BtnExpander,
     BtnClose,
     TransformPanel,
     Pic,
+    BtnCollapseNodeTree,
   },
 
   beforeMount() {
@@ -244,14 +263,25 @@ export default {
 
   computed: {
     showPart() {
-      return this.$props.node instanceof User || (this.$props.node instanceof Block && this.render);
+      return this.node instanceof User || (this.node instanceof Block && this.render);
     },
 
-    strippedDesc() {
-      return this.$props.descr ? stripHtml(this.$props.descr).replaceAll(/\u00a0/g, "") : "";
+    userStrippedDesc() {
+      if (!this.descr) return "<p></p>";
+      const d = stripHtml(this.descr).replaceAll(/\u00a0/g, "");
+
+      //list
+      if (d.indexOf("\n") !== -1)
+        return `<ul> ${d
+          .split("\n")
+          .map((word) => `<li>${urlify(word)}</li>`)
+          .join("")} </ul>`;
+
+      //paragraph
+      return urlify(d);
     },
 
-    description() {
+    blockDesc() {
       if (["http", "https"].some((d) => this.descr.toLowerCase().includes(d)))
         return `<a href="${this.descr}" target="_blank" class="block-link-label">${
           this.descr.length > 19 ? this.descr.slice(0, 19) + "..." : this.descr
@@ -370,6 +400,15 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+
+  .fa-clone {
+    position: absolute;
+    top: 10px;
+    left: -5px;
+    z-index: 1;
+    font-size: 1.4rem;
+    color: $clr-orange;
+  }
 }
 .flowy-node-wrapper {
   width: $block_width;
@@ -383,14 +422,22 @@ export default {
   background-color: $clr-emerald;
   height: $block_height;
 
-  .text {
+  .text-wrapper {
+    height: 100%;
+    width: 100%;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 80%;
-    font-size: 1.6rem;
-    color: #fff;
-    text-align: center;
+
+    .text {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 75%;
+      color: #fff;
+      font-size: $fs-lg;
+    }
   }
 }
 .upper-block {
@@ -409,7 +456,6 @@ export default {
       height: $thumb_height;
       width: $thumb_width;
       border-radius: $thumb_border_radius;
-      //max-width: 50%;
 
       img {
         width: 100%;
@@ -420,18 +466,18 @@ export default {
     }
 
     .text-wrapper {
-      flex: 1;
       height: 100%;
+      width: 200px;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      margin: 0 10px;
-      font-size: 0.9rem;
+      margin: 0 12.5px 0 7.5px;
+      font-size: $fs-mid-reg;
 
       %span-tip-shared {
         display: block;
         font-weight: 700;
-        font-size: 0.9rem;
+        font-size: $fs-mid-reg;
 
         &:hover {
           cursor: pointer;
@@ -444,6 +490,7 @@ export default {
 
         .span-show-full {
           @extend %span-tip-shared;
+          display: inline-block;
         }
       }
 

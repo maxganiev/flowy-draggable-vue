@@ -1,13 +1,13 @@
 <template>
-  <div class="switch-holder" :style="styling.holder">
+  <div class="switch-holder" role="switch" :style="styling.holder">
     <div
       class="switcher"
-      :class="{ checked: checked }"
+      :class="{ checked, disabled }"
       :style="styling.switcher"
       role="switch"
       @click="onChange"
     >
-      <div class="ball" :class="{ checked: checked }" :style="styling.ball"></div>
+      <div class="ball" :class="{ checked }" :style="styling.ball"></div>
     </div>
     <label class="form-label" :style="styling.label">{{ labelContent }}</label>
   </div>
@@ -37,6 +37,11 @@ export default {
         };
       },
     },
+
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   methods: {
     onChange() {
@@ -62,6 +67,11 @@ export default {
 
   &.checked {
     background-color: $clr-emerald;
+  }
+
+  &.disabled {
+    opacity: 0.6;
+    pointer-events: none;
   }
 
   .ball {

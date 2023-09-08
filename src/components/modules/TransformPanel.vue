@@ -1,5 +1,5 @@
 <template>
-  <div class="transform-panel" @mouseleave="onMouseUp">
+  <div class="no-select transform-panel" @mouseleave="onMouseUp">
     <button @mousedown="onMouseDown" @mouseup="onMouseUp" data-direction="up" class="full-row">
       &#9650;
     </button>

@@ -1,6 +1,5 @@
 <template>
   <button
-    v-if="render"
     class="btn btn-create-separate-node"
     @click="
       () => {
@@ -15,13 +14,11 @@
       transition: 'transform 0.4s ease-out',
     }"
   >
-    <i class="fa-solid fa-screwdriver-wrench"></i>
+    <font-awesome-icon icon="fa-solid fa-screwdriver-wrench" />
   </button>
 </template>
 
 <script>
-import { store } from "@/store";
-
 export default {
   name: "BtnOptions",
 
@@ -37,16 +34,8 @@ export default {
   },
 
   data: () => ({
-    store,
-    //by default
-    render: false,
     clicked: false,
   }),
-
-  beforeMount() {
-    //here we check if current user is allowed to update scheme
-    this.render = store.adminsIds.includes(store.user.id);
-  },
 };
 </script>
 

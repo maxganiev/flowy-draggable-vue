@@ -9,19 +9,14 @@
 		"build": "vite build",
 		"preview": "vite preview --port 4173"
 	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/remcoplasmeyer/flowy-vue.git"
-	},
 	"files": [
 		"dist/lib"
 	],
-	"author": "Remco Plasmeijer <remco.plasmeijer@gmail.com>",
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/remcoplasmeyer/flowy-vue/issues"
-	},
 	"dependencies": {
+		"@fortawesome/free-brands-svg-icons": "^6.4.2",
+		"@fortawesome/free-regular-svg-icons": "^6.4.2",
+		"@fortawesome/free-solid-svg-icons": "^6.4.2",
+		"@fortawesome/vue-fontawesome": "^2.0.10",
 		"@hipsjs/shopify-draggable-vue": "^1.0.7",
 		"lodash": "^4.17.15"
 	},
