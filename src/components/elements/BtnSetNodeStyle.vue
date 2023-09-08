@@ -1,16 +1,12 @@
 <template>
-  <button
-    class="btn-set-connector-line"
-    @click="onClick"
-    title="Изменить текущий вид соединительной линии"
-  >
+  <button class="btn-set-node-style" @click="onClick" title="Редактировать стиль блока">
     <font-awesome-icon icon="fa-solid fa-chart-line" />
   </button>
 </template>
 
 <script>
 export default {
-  name: "BtnSetConnectorLine",
+  name: "BtnSetNodeStyle",
 
   methods: {
     onClick() {
@@ -21,7 +17,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.btn-set-connector-line {
+.btn-set-node-style {
   background: $clr-primary;
   color: #fff;
   font-weight: 700;
@@ -29,5 +25,8 @@ export default {
   height: 30px;
   border-radius: 30px;
   font-size: 1rem;
+  position: absolute;
+  top: 10px;
+  left: 10px;
 }
 </style>

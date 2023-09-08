@@ -20,7 +20,7 @@
     <div
       id="flowy-tree"
       :style="{
-        transform: `translateX(${this.transBaseX}px) translateY(${this.transBaseY}px) scale(${this.scale})`,
+        transform: `translateX(${store.schemaTransVals.x}px) translateY(${store.schemaTransVals.y}px) scale(${store.schemaTransVals.scale})`,
       }"
       ref="elem"
       @mousedown="onMouseDown"
@@ -33,14 +33,14 @@
         v-on="{ ...$listeners }"
         :node="node"
         :key="node.id"
-        :scale="scale"
+        :scale="store.schemaTransVals.scale"
         @drag-start="onDragStart($event)"
         @drag-stop="onDragStop($event)"
         @enter-drop="onEnterDrop($event)"
         :before-move="onBeforeMove"
         :before-add="onBeforeAdd"
         :is-dragging="dragging"
-        :schema-is-dragged="schemaClicked"
+        :schema-is-dragged="store.schemaClicked"
       >
       </FlowyNode>
     </div>
@@ -51,6 +51,7 @@
 import Mirror from "./flowy_components/Mirror.vue";
 import Vue from "vue";
 import Grid from "modules/Grid.vue";
+import { store } from "@/store.js";
 /* eslint-disable no-unused-vars */
 
 export default {
@@ -84,14 +85,11 @@ export default {
     return {
       elem: null,
       draggingNode: null,
-      schemaClicked: false,
       left: 0,
       top: 0,
-      transBaseX: 0,
-      transBaseY: 0,
       deltaX: 0,
       deltaY: 0,
-
+      store,
       MirrorConstructor: Vue.extend(Mirror),
       flowyNodeMirror: null,
       int: null,
@@ -124,8 +122,8 @@ export default {
         .querySelector('[data-node="flowy"]')
         .getBoundingClientRect();
 
-      this.transBaseX = -firstFlowyNodeRect.width / 2.5;
-      this.transBaseY = -firstFlowyNodeRect.top * 0.9;
+      store.schemaTransVals.x = -firstFlowyNodeRect.width / 2.5;
+      store.schemaTransVals.y = -firstFlowyNodeRect.top * 0.9;
     },
 
     onMouseDown(e) {
@@ -143,7 +141,7 @@ export default {
     },
 
     onMouseUp(e) {
-      this.schemaClicked = false;
+      store.toggleShemaClicked(false);
 
       if (document.getElementById("flowy-node-mirror") && e.type !== "mouseleave") {
         this.flowyNodeMirror = null;
@@ -155,26 +153,26 @@ export default {
     },
 
     onMouseMove(e) {
-      if (!this.schemaClicked) return;
+      if (!store.schemaClicked) return;
 
       const rect = this.$refs.elem.getBoundingClientRect();
       const dragStep = 30;
       //x
       this.deltaX = Math.abs(this.left - e.clientX);
       if (this.deltaX > 2.6) {
-        if (this.left > e.clientX) this.transBaseX -= dragStep;
-        if (this.left < e.clientX) this.transBaseX += dragStep;
+        if (this.left > e.clientX) store.schemaTransVals.x -= dragStep;
+        if (this.left < e.clientX) store.schemaTransVals.x += dragStep;
       }
       //y
       this.deltaY = Math.abs(this.top - e.clientY);
       if (this.deltaY > 2.6) {
-        if (this.top > e.clientY) this.transBaseY -= dragStep;
-        if (this.top < e.clientY) this.transBaseY += dragStep;
+        if (this.top > e.clientY) store.schemaTransVals.y -= dragStep;
+        if (this.top < e.clientY) store.schemaTransVals.y += dragStep;
       }
 
       const scaleFactor = (rect.width / this.$refs.elem.offsetWidth).toFixed(2);
 
-      this.$refs.elem.style.transform = `translateX(${this.transBaseX}px) translateY(${this.transBaseY}px) scale(${scaleFactor})`;
+      this.$refs.elem.style.transform = `translateX(${store.schemaTransVals.x}px) translateY(${store.schemaTransVals.y}px) scale(${scaleFactor})`;
       if (this.left !== e.clientX) this.left = e.clientX;
       this.top = e.clientY;
     },
@@ -189,7 +187,7 @@ export default {
         !e.target.classList.contains("grid-cell")
       )
         return;
-      this.schemaClicked = true;
+      store.toggleShemaClicked(true);
     },
 
     createFlowyNodeMirror(e) {
@@ -230,13 +228,13 @@ export default {
     scrollPageWhileDraggingMirror(rect) {
       //X
       const mirrorScrolledPageByX = rect.x / this.$refs.flowyContainer.clientWidth;
-      if (mirrorScrolledPageByX >= 0.8) this.transBaseX -= 40;
-      else if (mirrorScrolledPageByX <= 0.1) this.transBaseX += 40;
+      if (mirrorScrolledPageByX >= 0.8) store.schemaTransVals.x -= 40;
+      else if (mirrorScrolledPageByX <= 0.1) store.schemaTransVals.x += 40;
 
       //Y
       const mirrorScrolledPageByY = rect.y / this.$refs.flowyContainer.clientHeight;
-      if (mirrorScrolledPageByY >= 0.65) this.transBaseY -= 40;
-      else if (mirrorScrolledPageByY <= 0.1) this.transBaseY += 40;
+      if (mirrorScrolledPageByY >= 0.65) store.schemaTransVals.y -= 40;
+      else if (mirrorScrolledPageByY <= 0.1) store.schemaTransVals.y += 40;
     },
 
     setNotDragging() {

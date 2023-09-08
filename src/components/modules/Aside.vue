@@ -43,6 +43,7 @@ import NewUsersAdder from "./NewUsersAdder.vue";
 import NewBlockAdder from "./NewBlockAdder.vue";
 import Vue from "vue";
 import Mirror from "../core/flowy_components/Mirror.vue";
+import { store } from "@/store.js";
 
 export default {
   name: "Aside",
@@ -54,6 +55,7 @@ export default {
     newDraggingBlock: null,
     MirrorConstructor: Vue.extend(Mirror),
     flowyNodeMirror: null,
+    store,
   }),
 
   props: {
@@ -108,7 +110,7 @@ export default {
         propsData: {
           top: e.offsetY,
           left: e.offsetX,
-          transform: `scale(${document.getElementById("scaler").value})`,
+          transform: `scale(${store.schemaTransVals.scale})`,
           content: closestEl.innerHTML,
         },
       });

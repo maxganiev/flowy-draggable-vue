@@ -12,11 +12,14 @@
 </template>
 
 <script>
+import { store } from "@/store.js";
+
 export default {
   name: "Scaler",
   data: () => ({
     zoom: "0.44",
     elem: null,
+    store,
   }),
 
   mounted() {
@@ -35,6 +38,7 @@ export default {
       const max = target.max;
       const val = target.value;
 
+      store.schemaTransVals.scale = target.value;
       target.style.backgroundSize = ((val - min) * 100) / (max - min) + "% 100%";
     },
   },

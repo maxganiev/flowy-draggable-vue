@@ -3,6 +3,8 @@
     <Alert :alert-type="alert.type" :show="alert.show" :HTMLContent="alert.HTMLContent" />
     <div class="wrapper-editable" ref="wrapperEl">
       <BtnClose @onClose="hideWrapper" />
+      <BtnSetNodeStyle @onClick="showNodeStyleModal = true" />
+
       <div v-if="isUserType" class="card user" ref="cardElem">
         <h4>Редактирование профиля - {{ store.editUser.data.full_name_short }}</h4>
         <ul class="list" v-if="editableNode">
@@ -94,6 +96,11 @@
           данных</span
         >
       </div>
+
+      <!--Модуль настройки стилей-->
+      <NodeStyleModal v-if="showNodeStyleModal" :node="editableNode">
+        <BtnClose @onClose="showNodeStyleModal = false" />
+      </NodeStyleModal>
     </div>
   </div>
 </template>
@@ -108,6 +115,8 @@ import CheckSwitch from "elements/CheckSwitch.vue";
 import Alert from "modules/Alert.vue";
 import { stripHtml } from "@/lib/stripHtml";
 import Pic from "elements/Pic.vue";
+import BtnSetNodeStyle from "elements/BtnSetNodeStyle.vue";
+import NodeStyleModal from "./NodeStyleModal.vue";
 
 export default {
   name: "UserEditForm",
@@ -137,6 +146,7 @@ export default {
         }, 3000);
       },
     },
+    showNodeStyleModal: false,
     tempImg: null,
   }),
 
@@ -243,7 +253,7 @@ export default {
     },
   },
 
-  components: { BtnClose, CheckSwitch, Alert, Pic },
+  components: { BtnClose, CheckSwitch, Alert, Pic, BtnSetNodeStyle, NodeStyleModal },
 };
 </script>
 

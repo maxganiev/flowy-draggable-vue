@@ -20,6 +20,7 @@
     >
       <div
         class="flex flex-row flex-no-wrap justify-between items-center p-4 no-select upper-block"
+        :class="node.cssClassName"
       >
         <div class="flex flex-row flex-no-wrap justify-start items-center main-info-wrapper">
           <div class="thumb-wrapper">
@@ -62,6 +63,7 @@
     <div
       v-else="node.type === 'block'"
       class="flowy-node-wrapper no-select wrapper-block"
+      :class="node.cssClassName"
       :data-type="node.type"
       :data-id="node.id"
     >
@@ -93,6 +95,7 @@
     />
     <BtnExpander
       v-if="node.type === 'user'"
+      :node="node"
       :callback="() => (showDescr = !showDescr)"
       :isClosed="!showDescr"
       :styling="{
@@ -104,73 +107,28 @@
 
     <div
       class="btn-panel"
+      :class="node.cssClassName"
       v-if="render"
       :style="{
         zIndex: showPanel ? 1 : -1,
-        right: showPanel ? `15px` : '10px',
+        right: showPanel ? `15px` : '0px',
       }"
     >
       <BtnCreateSeparateNode :node="node" />
       <BtnEditNode :node-id="node.id" />
-      <BtnSetConnectorLine @onClick="connectorLine.setShow(node)" />
       <BtnCloneNode v-if="node.type === 'user' && !node.isCloned" :node="node" />
       <BtnRemoveFlowyNode :remove="remove" />
-    </div>
-
-    <div v-if="connectorLine.show" class="connector-line-modal">
-      <strong>Тип соединительной линии:</strong>
-      <BtnClose @onClose="connectorLine.setShow()" />
-      <ul>
-        <li>
-          <input
-            type="radio"
-            value="1"
-            v-model="connectorLine.type"
-            @change="setNodeConnectorLine"
-          />
-          <span>
-            Сплошная
-            <svg height="40" width="40">
-              <line x1="0" y1="0" x2="200" y2="0" style="stroke: #00606f; stroke-width: 2" />
-              Sorry, your browser does not support inline SVG.
-            </svg></span
-          >
-        </li>
-        <li>
-          <input
-            type="radio"
-            value="2"
-            v-model="connectorLine.type"
-            @change="setNodeConnectorLine"
-          />
-          <span
-            >Пунктирная
-            <svg height="40" width="40">
-              <line
-                stroke-dasharray="4"
-                x1="0"
-                y1="0"
-                x2="200"
-                y2="0"
-                style="stroke: #00606f; stroke-width: 2"
-              />
-              Sorry, your browser does not support inline SVG.
-            </svg></span
-          >
-        </li>
-      </ul>
     </div>
   </div>
 </template>
 
 <script>
 /* eslint-disable no-unused-vars */
-import BtnCreateSeparateNode from "elements/BtnCreateSeparateNode.vue";
 import BtnOptions from "elements/BtnOptions.vue";
 import BtnEditNode from "elements/BtnEditNode.vue";
-import BtnSetConnectorLine from "elements/BtnSetConnectorLine.vue";
 import BtnCloneNode from "elements/BtnCloneNode.vue";
 import BtnRemoveFlowyNode from "elements/BtnRemoveFlowyNode.vue";
+import BtnCreateSeparateNode from "elements/BtnCreateSeparateNode.vue";
 import BtnExpander from "elements/BtnExpander.vue";
 import BtnClose from "elements/BtnClose.vue";
 import { store } from "@/store.js";
@@ -192,19 +150,6 @@ export default {
     nodeIsTranslating: false,
     showFullPosition: false,
     avaTemplate: null,
-    connectorLine: {
-      show: false,
-      type: 1,
-      revisedNode: {},
-      setShow(node) {
-        this.show = !this.show;
-
-        if (this.show) {
-          this.revisedNode = node;
-          this.type = this.revisedNode.useDottedConnectorLine ? 2 : 1;
-        } else this.revisedNode = {};
-      },
-    },
   }),
 
   props: {
@@ -245,7 +190,6 @@ export default {
   components: {
     BtnCreateSeparateNode,
     BtnOptions,
-    BtnSetConnectorLine,
     BtnEditNode,
     BtnCloneNode,
     BtnRemoveFlowyNode,
@@ -384,11 +328,6 @@ export default {
         line.style.opacity = "1";
       }, 200);
     },
-
-    setNodeConnectorLine() {
-      this.connectorLine.revisedNode.useDottedConnectorLine = this.connectorLine.type == 2;
-      store.toggleShemaStatus(true);
-    },
   },
 };
 </script>
@@ -404,7 +343,7 @@ export default {
   .fa-clone {
     position: absolute;
     top: 10px;
-    left: -5px;
+    left: 5px;
     z-index: 1;
     font-size: 1.4rem;
     color: $clr-orange;
@@ -419,7 +358,6 @@ export default {
 }
 
 .wrapper-block {
-  background-color: $clr-emerald;
   height: $block_height;
 
   .text-wrapper {
@@ -441,7 +379,6 @@ export default {
   }
 }
 .upper-block {
-  background-color: $clr-emerald;
   height: 100%;
   padding: 0;
   margin: 0;
@@ -523,8 +460,8 @@ export default {
 }
 
 .descr-wrapper {
+  background-color: $clr-orange;
   padding: 5px 10px;
-  background: $clr-orange;
   color: $clr-milk;
   border-radius: 10px;
   font-size: $fs-mid-head;
@@ -532,12 +469,11 @@ export default {
 }
 
 .btn-panel {
-  background-color: #00606f;
   display: flex;
   justify-content: space-evenly;
-  border-radius: 10px;
+  border-radius: 20px;
   position: absolute;
-  right: 10px;
+  right: 0px;
   height: 100%;
   width: 100%;
   align-items: center;
@@ -547,44 +483,6 @@ export default {
   button:hover {
     transform: scale(1.2);
     transition: all 0.4s ease-out;
-  }
-}
-
-.connector-line-modal {
-  width: 110%;
-  height: 110%;
-  position: absolute;
-  z-index: 1;
-  top: -10px;
-  left: -15.8px;
-  background: #fff;
-  border-radius: 10px;
-  padding: 10px;
-  font-size: $fs-mid-reg;
-
-  button {
-    position: absolute;
-    right: 10px;
-  }
-
-  strong {
-    margin: 10px 5px;
-    font-weight: 700;
-    font-size: $fs-mid-head;
-  }
-
-  ul > li {
-    input {
-      margin: 0 5px;
-      height: 1.4rem;
-      aspect-ratio: 1;
-    }
-
-    svg {
-      height: 5px;
-      display: inline-block;
-      margin-left: 10px;
-    }
   }
 }
 </style>

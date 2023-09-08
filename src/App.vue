@@ -4,7 +4,7 @@
     style="height: auto; min-height: 100vh"
   >
     <Spinner :loading="store.loading" />
-    <Scaler @rangeChange="updateScale" />
+    <Scaler />
     <div class="panel-bottom">
       <CheckSwitch
         :labelContent="`${!showGrid ? 'Показать сетку' : 'Скрыть сетку'}`"
@@ -36,7 +36,7 @@
           v-if="store.nodes.length > 0"
           class="h-full w-full p-6"
           :nodes="store.nodes"
-          :scale="schemaScale"
+          :scale="store.schemaTransVals.scale"
           :showGrid="showGrid"
           @drag-start="onDragStart"
           @add="add"
@@ -77,7 +77,6 @@ export default {
     dragging: false,
     renderUsersTab: false,
     schemeWrapper: null,
-    schemaScale: null,
     alert: {
       type: "success",
       show: false,
@@ -124,15 +123,7 @@ export default {
     store.toggleLoading();
   },
 
-  mounted() {
-    this.schemaScale = document.getElementById("scaler").value;
-  },
-
   methods: {
-    updateScale(target) {
-      this.schemaScale = target.value;
-    },
-
     beforeAdd(event) {
       console.log("before add", event);
       store.removeAddedUser(event.to.data.id);

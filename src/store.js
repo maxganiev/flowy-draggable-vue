@@ -62,6 +62,17 @@ export const store = reactive({
     this.shemaIsUpdated = updateStatus;
   },
 
+  schemaClicked: false,
+  toggleShemaClicked(/**@type {Boolean} */ clickStatus) {
+    this.schemaClicked = clickStatus;
+  },
+
+  schemaTransVals: {
+    x: 0,
+    y: 0,
+    scale: "0.44",
+  },
+
   showUserEditForm: false,
   toggleShowUserEditForm() {
     this.showUserEditForm = !this.showUserEditForm;

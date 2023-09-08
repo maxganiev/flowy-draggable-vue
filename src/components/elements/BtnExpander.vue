@@ -1,6 +1,7 @@
 <template>
   <button
     class="expander"
+    :class="generatedClass"
     :style="{ ...styling }"
     @click="
       (e) => {
@@ -29,7 +30,19 @@ export default {
     styling: {
       type: Object,
     },
+
+    node: {
+      type: Object,
+      required: true,
+    },
   },
+
+  computed: {
+    generatedClass() {
+      return "btn-expander-bg-" + this.node.cssClassName.split("-").slice(3).join("-");
+    },
+  },
+
   methods: {
     scrollDown(e) {
       setTimeout(() => {
@@ -45,7 +58,6 @@ export default {
 
 <style lang="scss" scoped>
 .expander {
-  background: $clr-orange;
   color: #fff;
   font-weight: 700;
   width: 30px;

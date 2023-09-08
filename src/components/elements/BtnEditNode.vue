@@ -1,5 +1,5 @@
 <template>
-  <button class="btn btn-edit" @click="onEdit" title="Редактировать узел">
+  <button class="btn btn-edit" @click="onEdit" title="Редактировать данные">
     <font-awesome-icon icon="fa-solid fa-marker" />
   </button>
 </template>

@@ -36,7 +36,7 @@ button,
 	}
 }
 
-//Вынесен сюда, чтобы переписать стили клонируемых элементов
+//Вынесен сюда, чтобы переписать стили копируемым зеркалом элементов
 .mirror-wrapper {
 	position: absolute;
 	z-index: 1000;
@@ -72,4 +72,58 @@ button,
 	height: 64px;
 	position: absolute;
 	background: $clr-milk;
+}
+
+//сеты стилей блоков
+.block-body {
+	&-user-set-default,
+	&-block-set-default {
+		background: $clr-emerald;
+	}
+
+	&-user {
+		&-set-1 {
+			background: linear-gradient(90deg, $clr-emerald 35%, $clr-beige 0%);
+		}
+
+		&-set-2 {
+			background: linear-gradient(90deg, $clr-emerald 35%, $clr-greippi 0%);
+		}
+
+		&-set-3 {
+			background: linear-gradient(90deg, $clr-emerald 35%, $clr-seawave 0%);
+		}
+	}
+
+	&-block {
+		&-set-1 {
+			background: $clr-beige;
+		}
+
+		&-set-2 {
+			background: $clr-greippi;
+		}
+
+		&-set-3 {
+			background: $clr-seawave;
+		}
+	}
+}
+
+.btn-expander-bg {
+	&-set-default {
+		background: $clr-orange;
+	}
+
+	&-set-1 {
+		background: $clr-emerald;
+	}
+
+	&-set-2 {
+		background: $clr-emerald;
+	}
+
+	&-set-3 {
+		background: $clr-orange;
+	}
 }

@@ -4,7 +4,8 @@ export class Block {
     /**@type {Number}*/ id,
     /**@type {String}*/ descr,
     /**@type {Number} @desc {кол-во px, на которые необходимо сместить текущий нод по У, начиная от 0 (x100)} */ top,
-    /**@type  {Boolean}*/ useDottedConnectorLine = false
+    /**@type  {Boolean}*/ useDottedConnectorLine = false,
+    /**@type {String} */ cssClassName = "block-body-block-set-default"
   ) {
     this.parentId = parentId;
     this.id = id;
@@ -13,6 +14,7 @@ export class Block {
     };
     this.top = top;
     this.useDottedConnectorLine = useDottedConnectorLine;
+    this.cssClassName = cssClassName;
   }
 
   get nodeComponent() {

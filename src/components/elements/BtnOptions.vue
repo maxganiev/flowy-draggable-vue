@@ -1,6 +1,6 @@
 <template>
   <button
-    class="btn btn-create-separate-node"
+    class="btn btn-options"
     @click="
       () => {
         callback();
@@ -40,7 +40,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.btn-create-separate-node {
+.btn-options {
   background: #000;
   color: #fff;
   font-weight: 700;

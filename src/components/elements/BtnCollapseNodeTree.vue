@@ -38,30 +38,22 @@ export default {
         closest.insertAdjacentHTML("beforeend", `<div id="${coverId}" class="line-cover"></div>`);
       else document.getElementById(coverId).remove();
 
-      function getTranslateXY(element) {
-        const style = window.getComputedStyle(element);
-        const matrix = new DOMMatrixReadOnly(style.transform);
+      // function getTranslateXY(element) {
+      //   const style = window.getComputedStyle(element);
+      //   const matrix = new DOMMatrixReadOnly(style.transform);
+      //   element.style.transform = `translateX(${matrix.m41 / 2}px) translateY(0px) scale(${
+      //     store.schemaTransVals.scale
+      //   })`;
+      // }
 
-        element.style.transform = `translateX(-60px) translateY(0px) scale(${
-          element.getBoundingClientRect().width / element.offsetWidth
-        })`;
+      //обновляем реактивное значение, чтобы вызвать перерисовку линий:
+      store.schemaClicked = true;
 
-        // return {
-        //   translateX: matrix.m41,
-        //   translateY: matrix.m42,
-        //   scale: element.getBoundingClientRect().width / element.offsetWidth,
-        // };
-      }
-
-      getTranslateXY(document.getElementById("flowy-tree"));
-      store.toggleShemaStatus(true);
       this.$emit("onClick", this.onClick);
 
-      // closest.scrollIntoView({
-      //   behavior: "smooth",
-      //   block: "start",
-      //   inline: "center",
-      // });
+      setTimeout(() => {
+        store.schemaClicked = false;
+      }, 150);
     },
   },
 };
