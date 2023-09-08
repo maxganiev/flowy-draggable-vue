@@ -38,3 +38,6 @@ if (GlobalVue) {
 export { Flowy, FlowyNode, FlowyBlock, FlowyNewBlock, FlowyDragHandle };
 
 export default plugin;
+
+//temp for ls, remove when actual db connected
+if (window.location.href.includes("reset")) localStorage.removeItem("schema_nodes");
