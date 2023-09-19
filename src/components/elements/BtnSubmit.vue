@@ -1,5 +1,7 @@
 <template>
-  <button class="btn-submit" @click="onSubmit">{{ content }}</button>
+  <button class="btn-submit" :class="classList.map((c) => c).join(' ')" @click="onSubmit">
+    {{ content }}
+  </button>
 </template>
 
 <script>
@@ -10,6 +12,11 @@ export default {
     content: {
       type: String,
       required: true,
+    },
+
+    classList: {
+      type: Array,
+      required: false,
     },
   },
 

@@ -1,6 +1,6 @@
 <template>
   <button class="btn-swipe-tree-visibility" @click.self="(e) => onClick(node, e)" :style="styling">
-    <font-awesome-icon v-if="collapsed" icon="fa-solid fa-chevron-up" />
+    <font-awesome-icon v-if="!collapsed" icon="fa-solid fa-chevron-up" />
     <font-awesome-icon v-else icon="fa-solid fa-chevron-down" />
   </button>
 </template>
@@ -37,14 +37,6 @@ export default {
       if (this.collapsed)
         closest.insertAdjacentHTML("beforeend", `<div id="${coverId}" class="line-cover"></div>`);
       else document.getElementById(coverId).remove();
-
-      // function getTranslateXY(element) {
-      //   const style = window.getComputedStyle(element);
-      //   const matrix = new DOMMatrixReadOnly(style.transform);
-      //   element.style.transform = `translateX(${matrix.m41 / 2}px) translateY(0px) scale(${
-      //     store.schemaTransVals.scale
-      //   })`;
-      // }
 
       //обновляем реактивное значение, чтобы вызвать перерисовку линий:
       store.schemaClicked = true;

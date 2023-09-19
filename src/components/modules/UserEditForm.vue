@@ -84,13 +84,12 @@
           }"
           @onChange="syncDb"
         />
-        <button
-          class="btn"
-          :class="[{ 'col-1-span-3': !isUserType }, { 'btn-block': !isUserType }]"
-          @click="updateNode"
-        >
-          Сохранить изменения
-        </button>
+        <BtnSubmit
+          content="Сохранить изменения"
+          :classList="!isUserType ? ['btn', 'col-1-span-3', 'btn-block'] : ['btn']"
+          @onSubmit="updateNode"
+        />
+
         <span class="span-warning col-1-span-3" :class="{ show: syncWithDb }"
           >Перепроверьте, все ли указано корректно! Вносятся изменения в общую структуру
           данных</span
@@ -99,7 +98,19 @@
 
       <!--Модуль настройки стилей-->
       <NodeStyleModal v-if="showNodeStyleModal" :node="editableNode">
-        <BtnClose @onClose="showNodeStyleModal = false" />
+        <template v-slot:bottom>
+          <BtnSubmit
+            content="Сохранить изменения"
+            :classList="!isUserType ? ['btn', 'col-1-span-3', 'btn-block'] : ['btn']"
+            @onSubmit="
+              () => {
+                showNodeStyleModal = false;
+                store.updateNode(editableNode);
+                store.saveNodes();
+              }
+            "
+          />
+        </template>
       </NodeStyleModal>
     </div>
   </div>
@@ -110,6 +121,7 @@ import { store } from "@/store";
 import { User } from "@/lib/constructors/User";
 import { Tag } from "@/lib/constructors/Tag";
 import BtnClose from "elements/BtnClose.vue";
+import BtnSubmit from "elements/BtnSubmit.vue";
 import cloneDeep from "lodash/cloneDeep";
 import CheckSwitch from "elements/CheckSwitch.vue";
 import Alert from "modules/Alert.vue";
@@ -253,7 +265,7 @@ export default {
     },
   },
 
-  components: { BtnClose, CheckSwitch, Alert, Pic, BtnSetNodeStyle, NodeStyleModal },
+  components: { BtnClose, BtnSubmit, CheckSwitch, Alert, Pic, BtnSetNodeStyle, NodeStyleModal },
 };
 </script>
 

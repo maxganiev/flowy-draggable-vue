@@ -1,6 +1,6 @@
 <template>
   <div class="node-style-modal">
-    <slot />
+    <slot name="top" />
     <div class="pallete">
       <div class="header">
         <h4>Выберите стиль блока</h4>
@@ -48,6 +48,7 @@
         >
       </div>
     </div>
+    <slot name="bottom" />
   </div>
 </template>
 

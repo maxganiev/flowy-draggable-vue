@@ -21,7 +21,11 @@
         @onChange="showGrid = !showGrid"
       />
       <div class="submit-changes" v-if="store.shemaIsUpdated && showSchemaUpdateWarning">
-        <BtnSubmit @onSubmit="updateSchema" content="Сохранить изменения" />
+        <BtnSubmit
+          @onSubmit="updateSchema"
+          content="Сохранить изменения"
+          :classList="['subbutton']"
+        />
         <a class="close-submit" href="#" @click.prevent="store.toggleShemaStatus(false)"
           >&#10754;</a
         >
@@ -376,7 +380,7 @@ a {
     align-items: center;
     background-color: $clr-orange;
 
-    button {
+    .subbutton {
       background-color: transparent !important;
       margin: unset !important;
       width: 95%;
