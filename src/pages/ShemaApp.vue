@@ -59,21 +59,21 @@
 <script>
 /* eslint-disable vue/no-unused-components */
 /* eslint-disable no-unused-vars */
-import { getCurrentUser } from "./demo_data/getCurrentUser";
-import { store } from "./store";
-import { User } from "./lib/constructors/User";
-import { Block } from "./lib/constructors/Block";
-import Spinner from "./components/elements/Spinner.vue";
-import Scaler from "./components/elements/Scaler.vue";
-import BtnClose from "./components/elements/BtnClose.vue";
-import UserEditForm from "./components/modules/UserEditForm.vue";
-import Aside from "./components/modules/Aside.vue";
+import { getCurrentUser } from "../demo_data/getCurrentUser";
+import { store } from "@/store";
+import { User } from "@/lib/constructors/User";
+import { Block } from "@/lib/constructors/Block";
+import Spinner from "elements/Spinner.vue";
+import Scaler from "elements/Scaler.vue";
+import BtnClose from "elements/BtnClose.vue";
+import UserEditForm from "modules/UserEditForm.vue";
+import Aside from "modules/Aside.vue";
 import BtnSubmit from "elements/BtnSubmit.vue";
 import Alert from "modules/Alert.vue";
 import CheckSwitch from "elements/CheckSwitch.vue";
 
 export default {
-  name: "app",
+  name: "SchemaApp",
 
   data: () => ({
     store,

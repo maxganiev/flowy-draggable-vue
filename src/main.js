@@ -3,7 +3,9 @@ import FlowyPlugin from "./index.js";
 import NewFlowNode from "./components/core/flowy_nodes/new_nodes/NewFlowNode.vue";
 import NewFlowBlock from "./components/core/flowy_nodes/new_nodes/NewFlowBlock.vue";
 import FlowNode from "./components/core/flowy_nodes/existing_nodes/FlowNode.vue";
-import App from "./App.vue";
+import ShemaApp from "pages/ShemaApp.vue";
+import NotFound from "pages/NotFound.vue";
+
 /* import the fontawesome core */
 import { library } from "@fortawesome/fontawesome-svg-core";
 
@@ -36,6 +38,24 @@ Vue.component("font-awesome-icon", FontAwesomeIcon);
 
 Vue.config.productionTip = false;
 
+const About = { template: "<p>about page</p>" };
+
+const routes = {
+  "/interactive-scheme/": ShemaApp,
+  "/interactive-scheme/about": About,
+};
+
 new Vue({
-  render: (h) => h(App),
-}).$mount("#app");
+  el: "#app",
+  data: {
+    currentRoute: window.location.pathname,
+  },
+  computed: {
+    ViewComponent() {
+      return routes[this.currentRoute] || NotFound;
+    },
+  },
+  render(h) {
+    return h(this.ViewComponent);
+  },
+});

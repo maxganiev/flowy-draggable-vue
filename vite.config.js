@@ -22,8 +22,10 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
+      vue: "vue/dist/vue.js",
       "@": fileURLToPath(new URL("./src", import.meta.url)),
       core: fileURLToPath(new URL("./src/components/core", import.meta.url)),
+      pages: fileURLToPath(new URL("./src/pages", import.meta.url)),
       elements: fileURLToPath(new URL("./src/components/elements", import.meta.url)),
       modules: fileURLToPath(new URL("./src/components/modules", import.meta.url)),
     },
