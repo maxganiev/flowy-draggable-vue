@@ -6,7 +6,7 @@
 	"private": false,
 	"scripts": {
 		"dev": "vite",
-		"build": "vite build --base=/flowy-shema-vue/dist",
+		"build": "vite build",
 		"preview": "vite preview --port 4173"
 	},
 	"files": [
