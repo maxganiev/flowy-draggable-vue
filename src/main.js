@@ -32,6 +32,24 @@ Vue.component('font-awesome-icon', FontAwesomeIcon);
 
 Vue.config.productionTip = false;
 
+const About = { template: '<p>about page</p>' };
+
+const routes = {
+	'/interactive-scheme': ShemaApp,
+	'/interactive-scheme/about': About,
+};
+
 new Vue({
-	render: (h) => h(App),
-}).$mount('#app');
+	el: '#app',
+	data: {
+		currentRoute: window.location.pathname,
+	},
+	computed: {
+		ViewComponent() {
+			return routes[this.currentRoute] || NotFound;
+		},
+	},
+	render(h) {
+		return h(this.ViewComponent);
+	},
+});
